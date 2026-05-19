@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kompete Report — {{ report.company }}</title>
+  <style>
+    /* ── Base ────────────────────────────────────────── */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 11pt;
+      line-height: 1.6;
+      color: #1a1a2e;
+      background: #ffffff;
+    }
+
+    /* ── Page setup ──────────────────────────────────── */
+    @page {
+      size: A4;
+      margin: 20mm 15mm 20mm 15mm;
+      @top-right {
+        content: "Kompete — Competitor Intelligence";
+        font-size: 8pt;
+        color: #94a3b8;
+      }
+      @bottom-center {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size: 8pt;
+        color: #94a3b8;
+      }
+    }
+
+    /* ── Cover header ────────────────────────────────── */
+    .cover-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      color: white;
+      padding: 32px 36px;
+      border-radius: 12px;
+      margin-bottom: 28px;
+    }
+
+    .cover-header .badge {
+      display: inline-block;
+      background: rgba(99, 102, 241, 0.3);
+      color: #c7d2fe;
+      font-size: 8pt;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      margin-bottom: 12px;
+    }
+
+    .cover-header h1 {
+      font-size: 26pt;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .cover-header h1 .company-name {
+      color: #818cf8;
+    }
+
+    .cover-header .subtitle {
+      color: #94a3b8;
+      font-size: 10pt;
+    }
+
+    /* ── Section titles ──────────────────────────────── */
+    .section-title {
+      font-size: 13pt;
+      font-weight: 700;
+      color: #0f172a;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #e2e8f0;
+      margin-bottom: 14px;
+      margin-top: 22px;
+    }
+
+    .section-title .icon {
+      margin-right: 6px;
+    }
+
+    /* ── Cards ───────────────────────────────────────── */
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+    }
+
+    .card-label {
+      font-size: 8pt;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .card-value {
+      font-size: 14pt;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    /* ── Financial 4-grid ────────────────────────────── */
+    .financial-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .fin-card {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .fin-card .fin-label {
+      font-size: 7.5pt;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #15803d;
+      margin-bottom: 4px;
+    }
+
+    .fin-card .fin-value {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #14532d;
+    }
+
+    /* ── SWOT Grid ───────────────────────────────────── */
+    .swot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .swot-quadrant {
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .swot-S { background: #eff6ff; border: 1px solid #bfdbfe; }
+    .swot-W { background: #fef2f2; border: 1px solid #fecaca; }
+    .swot-O { background: #f0fdf4; border: 1px solid #bbf7d0; }
+    .swot-T { background: #fff7ed; border: 1px solid #fed7aa; }
+
+    .swot-quadrant h3 {
+      font-size: 9.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    .swot-S h3 { color: #1d4ed8; }
+    .swot-W h3 { color: #b91c1c; }
+    .swot-O h3 { color: #15803d; }
+    .swot-T h3 { color: #c2410c; }
+
+    .swot-quadrant ul { list-style: none; padding: 0; }
+    .swot-quadrant ul li {
+      font-size: 9pt;
+      color: #374151;
+      padding: 3px 0;
+      padding-left: 12px;
+      position: relative;
+    }
+
+    .swot-quadrant ul li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      font-weight: 700;
+    }
+
+    .swot-S ul li::before { color: #1d4ed8; }
+    .swot-W ul li::before { color: #b91c1c; }
+    .swot-O ul li::before { color: #15803d; }
+    .swot-T ul li::before { color: #c2410c; }
+
+    /* ── Sentiment bar ───────────────────────────────── */
+    .sentiment-wrapper {
+      margin-bottom: 14px;
+    }
+
+    .sentiment-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .sentiment-score {
+      font-size: 24pt;
+      font-weight: 800;
+      color: #0f172a;
+      min-width: 48px;
+    }
+
+    .sentiment-score .denom {
+      font-size: 12pt;
+      font-weight: 400;
+      color: #94a3b8;
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+    }
+
+    /* ── Lists ───────────────────────────────────────── */
+    .bullet-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 14px;
+    }
+
+    .bullet-list li {
+      padding: 6px 0 6px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 10pt;
+      color: #374151;
+      position: relative;
+    }
+
+    .bullet-list li:last-child { border-bottom: none; }
+
+    .bullet-list li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: #6366f1;
+      font-weight: 700;
+    }
+
+    /* ── Recommendation cards ────────────────────────── */
+    .rec-card {
+      background: linear-gradient(135deg, #faf5ff, #f3e8ff);
+      border: 1px solid #e9d5ff;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      font-size: 10pt;
+      color: #4c1d95;
+    }
+
+    .rec-num {
+      font-weight: 700;
+      margin-right: 6px;
+    }
+
+    /* ── Threat chips ────────────────────────────────── */
+    .threat-card {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      font-size: 10pt;
+      color: #7c2d12;
+    }
+
+    .threat-num {
+      font-weight: 700;
+      margin-right: 6px;
+    }
+
+    /* ── Sources ─────────────────────────────────────── */
+    .sources-list {
+      list-style: none;
+      padding: 0;
+      columns: 2;
+    }
+
+    .sources-list li {
+      font-size: 8pt;
+      color: #64748b;
+      padding: 2px 0;
+      word-break: break-all;
+    }
+
+    .sources-list li::before {
+      content: "• ";
+    }
+
+    /* ── Executive summary ───────────────────────────── */
+    .exec-summary {
+      background: #f8fafc;
+      border-left: 4px solid #6366f1;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      font-size: 10.5pt;
+      color: #334155;
+      line-height: 1.7;
+      margin-bottom: 14px;
+    }
+
+    /* ── Footer ──────────────────────────────────────── */
+    .report-footer {
+      margin-top: 28px;
+      padding-top: 12px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 8pt;
+      color: #94a3b8;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cover Header -->
+  <div class="cover-header">
+    <div class="badge">🧠 Kompete — AI Competitor Intelligence</div>
+    <h1>Competitive Report:<br><span class="company-name">{{ report.company }}</span></h1>
+    <div class="subtitle">Generated by autonomous AI research agents &bull; Powered by Gemini 2.0 Flash &bull; Google Search</div>
+  </div>
+
+  <!-- Executive Summary -->
+  <div class="section-title"><span class="icon">📋</span>Executive Summary</div>
+  <div class="exec-summary">{{ report.executive_summary }}</div>
+
+  <!-- Financial Snapshot -->
+  <div class="section-title"><span class="icon">💰</span>Financial Snapshot</div>
+  <div class="financial-grid">
+    <div class="fin-card">
+      <div class="fin-label">Revenue</div>
+      <div class="fin-value">{{ report.financial_snapshot.revenue }}</div>
+    </div>
+    <div class="fin-card">
+      <div class="fin-label">Valuation</div>
+      <div class="fin-value">{{ report.financial_snapshot.valuation }}</div>
+    </div>
+    <div class="fin-card">
+      <div class="fin-label">Growth</div>
+      <div class="fin-value">{{ report.financial_snapshot.growth }}</div>
+    </div>
+    <div class="fin-card">
+      <div class="fin-label">Total Funding</div>
+      <div class="fin-value">{{ report.financial_snapshot.funding }}</div>
+    </div>
+  </div>
+
+  <!-- Customer Sentiment -->
+  <div class="section-title"><span class="icon">⭐</span>Customer Sentiment Score</div>
+  <div class="sentiment-wrapper">
+    <div class="sentiment-row">
+      <div class="sentiment-score">
+        {{ report.sentiment_score }}<span class="denom">/10</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: {{ (report.sentiment_score / 10 * 100) | int }}%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SWOT Analysis -->
+  <div class="section-title"><span class="icon">📊</span>SWOT Analysis</div>
+  <div class="swot-grid">
+    <div class="swot-quadrant swot-S">
+      <h3>💪 Strengths</h3>
+      <ul>
+        {% for item in report.swot.strengths %}<li>{{ item }}</li>{% endfor %}
+      </ul>
+    </div>
+    <div class="swot-quadrant swot-W">
+      <h3>⚠️ Weaknesses</h3>
+      <ul>
+        {% for item in report.swot.weaknesses %}<li>{{ item }}</li>{% endfor %}
+      </ul>
+    </div>
+    <div class="swot-quadrant swot-O">
+      <h3>🚀 Opportunities</h3>
+      <ul>
+        {% for item in report.swot.opportunities %}<li>{{ item }}</li>{% endfor %}
+      </ul>
+    </div>
+    <div class="swot-quadrant swot-T">
+      <h3>🔥 Threats</h3>
+      <ul>
+        {% for item in report.swot.threats %}<li>{{ item }}</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Key Insights -->
+  <div class="section-title"><span class="icon">💡</span>Key Insights</div>
+  <ul class="bullet-list">
+    {% for insight in report.key_insights %}
+    <li>{{ insight }}</li>
+    {% endfor %}
+  </ul>
+
+  <!-- Strategic Recommendations -->
+  <div class="section-title"><span class="icon">🎯</span>Strategic Recommendations</div>
+  {% for rec in report.strategic_recommendations %}
+  <div class="rec-card">
+    <span class="rec-num">{{ loop.index }}.</span>{{ rec }}
+  </div>
+  {% endfor %}
+
+  <!-- Competitive Threats -->
+  <div class="section-title"><span class="icon">⚡</span>Competitive Threats</div>
+  {% for threat in report.competitive_threats %}
+  <div class="threat-card">
+    <span class="threat-num">{{ loop.index }}.</span>{{ threat }}
+  </div>
+  {% endfor %}
+
+  <!-- Data Sources -->
+  <div class="section-title"><span class="icon">🔗</span>Data Sources</div>
+  <ul class="sources-list">
+    {% for source in report.data_sources %}
+    <li>{{ source }}</li>
+    {% endfor %}
+  </ul>
+
+  <!-- Footer -->
+  <div class="report-footer">
+    Generated by Kompete &bull; AI Competitor Intelligence &bull; Powered by Gemini 2.0 Flash &bull; Not financial advice
+  </div>
+
+</body>
+</html>
