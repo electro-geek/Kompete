@@ -15,6 +15,8 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Copy .env files for build-time Next.js injection
+COPY .env* ./
 
 # Next.js telemetry is disabled
 ENV NEXT_TELEMETRY_DISABLED 1
