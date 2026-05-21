@@ -157,6 +157,7 @@ build/
 backend/.env
 frontend/.env.local
 backend/config.properties
+config.properties
 
 # WeasyPrint / PDF cache
 *.pdf

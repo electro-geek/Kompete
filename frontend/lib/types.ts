@@ -15,12 +15,22 @@ export interface FinancialSnapshot {
   funding: string
 }
 
+export interface FundingRound {
+  round: string
+  amount: string
+  date: string
+  investors: string
+  details: string
+}
+
 export interface ReportData {
   company: string
   executive_summary: string
   swot: SwotData
   financial_snapshot: FinancialSnapshot
+  funding_history?: FundingRound[]
   sentiment_score: number   // 1–10
+  strategic_moves?: string[]
   key_insights: string[]
   strategic_recommendations: string[]
   competitive_threats: string[]

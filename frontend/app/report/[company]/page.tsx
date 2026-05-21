@@ -10,6 +10,7 @@ import FinancialSnapshot from '@/components/report/FinancialSnapshot'
 import SentimentScore from '@/components/report/SentimentScore'
 import SwotGrid from '@/components/report/SwotGrid'
 import InsightsList from '@/components/report/InsightsList'
+import StrategicMoves from '@/components/report/StrategicMoves'
 import Recommendations from '@/components/report/Recommendations'
 import SourcesList from '@/components/report/SourcesList'
 import Spinner from '@/components/ui/Spinner'
@@ -142,9 +143,10 @@ export default function ReportPage() {
         </div>
 
         <div id="summary"><ExecutiveSummary summary={report.executive_summary} /></div>
-        <div id="financials"><FinancialSnapshot snapshot={report.financial_snapshot} /></div>
+        <div id="financials"><FinancialSnapshot snapshot={report.financial_snapshot} fundingHistory={report.funding_history} /></div>
         <div id="sentiment"><SentimentScore score={report.sentiment_score} /></div>
         <div id="swot"><SwotGrid swot={report.swot} /></div>
+        <div id="moves"><StrategicMoves moves={report.strategic_moves} /></div>
         <div id="insights"><InsightsList insights={report.key_insights} /></div>
         <div id="recommendations"><Recommendations recommendations={report.strategic_recommendations} threats={report.competitive_threats} /></div>
         <div id="sources"><SourcesList sources={report.data_sources} /></div>
@@ -158,6 +160,7 @@ const NAV_ITEMS = [
   { href: '#financials', label: '💰 Financials' },
   { href: '#sentiment', label: '⭐ Sentiment' },
   { href: '#swot', label: '📊 SWOT' },
+  { href: '#moves', label: '♟️ Moves' },
   { href: '#insights', label: '💡 Insights' },
   { href: '#recommendations', label: '🎯 Recommendations' },
   { href: '#sources', label: '🔗 Sources' },

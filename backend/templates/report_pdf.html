@@ -142,6 +142,48 @@
       color: #14532d;
     }
 
+    /* ── Funding History ────────────────────────────── */
+    .funding-title {
+      font-size: 10pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .funding-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 14px;
+      font-size: 8.5pt;
+    }
+
+    .funding-table th {
+      background: #f1f5f9;
+      color: #475569;
+      font-weight: 600;
+      text-align: left;
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .funding-table td {
+      padding: 6px 10px;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+    }
+
+    .funding-table tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .funding-table .round-badge {
+      font-weight: 700;
+      color: #6366f1;
+    }
+
     /* ── SWOT Grid ───────────────────────────────────── */
     .swot-grid {
       display: grid;
@@ -364,6 +406,32 @@
     </div>
   </div>
 
+  {% if report.funding_history %}
+  <div class="funding-title">Funding Rounds & Lead Investors</div>
+  <table class="funding-table">
+    <thead>
+      <tr>
+        <th style="width: 15%;">Round</th>
+        <th style="width: 15%;">Amount</th>
+        <th style="width: 15%;">Date</th>
+        <th style="width: 25%;">Investors</th>
+        <th style="width: 30%;">Strategic Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for round in report.funding_history %}
+      <tr>
+        <td class="round-badge">{{ round.round }}</td>
+        <td><strong>{{ round.amount }}</strong></td>
+        <td>{{ round.date }}</td>
+        <td>{{ round.investors }}</td>
+        <td>{{ round.details }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
   <!-- Customer Sentiment -->
   <div class="section-title"><span class="icon">⭐</span>Customer Sentiment Score</div>
   <div class="sentiment-wrapper">
@@ -405,6 +473,16 @@
       </ul>
     </div>
   </div>
+
+  {% if report.strategic_moves %}
+  <!-- Strategic Moves -->
+  <div class="section-title"><span class="icon">♟️</span>Strategic Moves</div>
+  <ul class="bullet-list">
+    {% for move in report.strategic_moves %}
+    <li>{{ move }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
 
   <!-- Key Insights -->
   <div class="section-title"><span class="icon">💡</span>Key Insights</div>

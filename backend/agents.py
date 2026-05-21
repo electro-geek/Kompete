@@ -152,6 +152,7 @@ Focus on:
 - Revenue growth rate year-over-year
 - Market share in their primary segment
 - Number of customers or users
+- Detailed funding history/rounds (Series A, B, Seed, etc.): round name, amount, date, lead and participating investors, and purpose/how they raised it.
 
 Return a JSON object with these exact keys:
 {{
@@ -162,6 +163,15 @@ Return a JSON object with these exact keys:
   "market_share": "<e.g. 23% in US productivity software>",
   "customers": "<e.g. 4 million paying customers>",
   "financial_summary": "<3-4 sentence narrative of the company's financial position>",
+  "funding_history": [
+    {{
+      "round": "<e.g. Series C>",
+      "amount": "<e.g. $120M>",
+      "date": "<e.g. October 2024>",
+      "investors": "<e.g. Sequoia Capital, Accel>",
+      "details": "<e.g. Led by Sequoia Capital to expand global infrastructure and hire senior researchers>"
+    }}
+  ],
   "data_sources": ["<URL or source name>", ...]
 }}
 
@@ -172,7 +182,7 @@ Return ONLY valid JSON, no markdown fences."""
         return json.loads(_clean_json(text))
     except Exception:
         logger.warning("Financials agent JSON parse failed, returning raw text")
-        return {"raw": text, "data_sources": []}
+        return {"raw": text, "funding_history": [], "data_sources": []}
 
 
 async def research_reviews(company: str) -> dict:
@@ -301,7 +311,21 @@ Synthesize all this data into a structured report. Return a JSON object with EXA
     "growth": "<growth rate>",
     "funding": "<total funding>"
   }},
+  "funding_history": [
+    {{
+      "round": "<round, e.g. Series C>",
+      "amount": "<amount, e.g. $120M>",
+      "date": "<date, e.g. October 2024>",
+      "investors": "<investors, e.g. Sequoia Capital, Accel>",
+      "details": "<concise description of why/how they secured it, max 15 words>"
+    }}
+  ],
   "sentiment_score": <number 1-10 from reviews data>,
+  "strategic_moves": [
+    "<recent strategic move, deal, or important decision (max 20 words)>",
+    "<recent strategic move, deal, or important decision (max 20 words)>",
+    "<recent strategic move, deal, or important decision (max 20 words)>"
+  ],
   "key_insights": [
     "<concise strategic insight 1 (max 20 words)>",
     "<concise strategic insight 2 (max 20 words)>",
