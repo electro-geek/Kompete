@@ -20,6 +20,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Generate build
+RUN mkdir -p public
 RUN npm run build
 
 # Production image, copy all the files and run next
