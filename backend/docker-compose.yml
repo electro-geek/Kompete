@@ -4,7 +4,7 @@ services:
   backend:
     build: .
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       # Mount config.properties and .env directly so changes apply without rebuilds
       - ./config.properties:/app/config.properties

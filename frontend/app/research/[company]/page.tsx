@@ -1,15 +1,23 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import ProgressTracker from '@/components/ProgressTracker'
 import { useResearchStream } from '@/hooks/useResearchStream'
+import { useEffect } from 'react'
 
 export default function ResearchPage() {
   const params = useParams()
+  const router = useRouter()
   const company = decodeURIComponent((params?.company as string) || '')
   const displayName = company.charAt(0).toUpperCase() + company.slice(1)
 
   const { progress, error } = useResearchStream(company)
+
+  useEffect(() => {
+    if (error === 'quota_exceeded') {
+      router.push(`/?quota=true&company=${encodeURIComponent(company)}`)
+    }
+  }, [error, router, company])
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">

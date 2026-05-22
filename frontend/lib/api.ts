@@ -34,6 +34,19 @@ export async function startResearch(company: string, token?: string | null): Pro
   return res.json()
 }
 
+export async function saveUserApiKey(apiKey: string, token?: string | null): Promise<void> {
+  const res = await fetch(`${API_URL}/user/settings`, {
+    method: 'POST',
+    headers: getHeaders(token),
+    body: JSON.stringify({ api_key: apiKey }),
+  })
+  
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: 'Unknown error' }))
+    throw new Error(err.detail || `HTTP ${res.status}`)
+  }
+}
+
 /**
  * Fetch the full report JSON for a completed research job.
  * Throws if the report is not ready yet or doesn't exist.

@@ -117,7 +117,7 @@ def decode_firebase_token(token: str, project_id: str = "") -> dict | None:
         logger.error(f"Error parsing firebase token: {e}")
         return None
 
-async def get_current_user_id(request: Request) -> str | None:
+async def get_current_user_claims(request: Request) -> dict | None:
     auth_header = request.headers.get("Authorization")
     token = None
     if auth_header and auth_header.startswith("Bearer "):
@@ -126,7 +126,10 @@ async def get_current_user_id(request: Request) -> str | None:
         token = request.query_params.get("token")
     if not token:
         return None
-    claims = decode_firebase_token(token, FIREBASE_PROJECT_ID)
+    return decode_firebase_token(token, FIREBASE_PROJECT_ID)
+
+async def get_current_user_id(request: Request) -> str | None:
+    claims = await get_current_user_claims(request)
     if claims:
         return claims.get("uid") or claims.get("sub")
     return None
@@ -181,7 +184,7 @@ async def _broadcast(company_key: str, event: str):
     job_progress.setdefault(company_key, []).append(event)
 
 
-async def _do_research(company: str, user_id: str | None = None):
+async def _do_research(company: str, user_id: str | None = None, api_key: str | None = None):
     key = _normalise(company)
     job_status[key] = "running"
     job_timestamps[key] = time.time()
@@ -190,7 +193,7 @@ async def _do_research(company: str, user_id: str | None = None):
         await _broadcast(key, event)
 
     try:
-        report = await run_research_pipeline(company, progress_callback=progress_callback)
+        report = await run_research_pipeline(company, progress_callback=progress_callback, api_key=api_key)
         report_cache[key] = report
         job_status[key] = "done"
         if user_id:
@@ -219,6 +222,19 @@ async def health_check():
     return {"status": "ok", "service": "Kompete API"}
 
 
+class UserSettingsReq(BaseModel):
+    api_key: str
+
+@app.post("/user/settings", tags=["User"])
+async def save_user_settings(body: UserSettingsReq, request: Request):
+    from database import save_user_api_key
+    user_id = await get_current_user_id(request)
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Not logged in")
+    if save_user_api_key(user_id, body.api_key.strip()):
+        return {"status": "success"}
+    raise HTTPException(status_code=500, detail="Failed to save settings")
+
 @app.post("/research", tags=["Research"])
 async def start_research(body: ResearchRequest, request: Request, background_tasks: BackgroundTasks):
     """
@@ -231,7 +247,12 @@ async def start_research(body: ResearchRequest, request: Request, background_tas
         raise HTTPException(status_code=400, detail="company name cannot be empty")
 
     key = _normalise(company)
-    user_id = await get_current_user_id(request)
+    claims = await get_current_user_claims(request)
+    if not claims:
+        raise HTTPException(status_code=401, detail="You must be logged in to analyze a company.")
+    
+    user_id = claims.get("uid") or claims.get("sub")
+    user_email = claims.get("email", "")
 
     if job_status.get(key) == "running":
         return {"job_id": key, "status": "already_running"}
@@ -239,6 +260,7 @@ async def start_research(body: ResearchRequest, request: Request, background_tas
     if key in report_cache:
         # If user is logged in, ensure it is also saved to their database history
         if user_id:
+            from database import save_report
             save_report(user_id, company, report_cache[key])
         return {"job_id": key, "status": "cached"}
 
@@ -260,11 +282,23 @@ async def start_research(body: ResearchRequest, request: Request, background_tas
         except Exception as e:
             logger.error(f"Failed database lookup on start_research: {e}")
 
+    # Verify if user is allowed to run analysis (One free analysis limit)
+    from database import count_user_reports, get_user_api_key
+    from config import ADMIN_EMAILS
+    
+    is_admin = user_email in ADMIN_EMAILS
+    api_key = get_user_api_key(user_id)
+    
+    if not is_admin and not api_key:
+        report_count = count_user_reports(user_id)
+        if report_count >= 1:
+            raise HTTPException(status_code=403, detail="free_limit_reached")
+
     # Reset any stale state
     job_progress[key] = []
     _sse_subscribers.setdefault(key, [])
 
-    background_tasks.add_task(_do_research, company, user_id)
+    background_tasks.add_task(_do_research, company, user_id, api_key)
     return {"job_id": key, "status": "started"}
 
 

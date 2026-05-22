@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { startResearch, fetchUserReports, getPdfDownloadUrl } from '@/lib/api'
+import { startResearch, fetchUserReports, getPdfDownloadUrl, saveUserApiKey } from '@/lib/api'
 import SearchBar from '@/components/SearchBar'
 import Header from '@/components/Header'
 import { useAuth } from '@/context/AuthContext'
@@ -20,6 +20,25 @@ export default function HomePage() {
   // User history state
   const [history, setHistory] = useState<any[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
+
+  // API Key state
+  const [showApiKeyPrompt, setShowApiKeyPrompt] = useState(false)
+  const [apiKey, setApiKey] = useState('')
+  const [savingApiKey, setSavingApiKey] = useState(false)
+  const [pendingCompany, setPendingCompany] = useState('')
+  const [promptReason, setPromptReason] = useState<'free_limit' | 'quota'>('free_limit')
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      if (urlParams.get('quota') === 'true') {
+        setPendingCompany(urlParams.get('company') || '')
+        setPromptReason('quota')
+        setShowApiKeyPrompt(true)
+        window.history.replaceState({}, '', '/') // clean up url
+      }
+    }
+  }, [])
 
   // Fetch history when user logins
   useEffect(() => {
@@ -48,9 +67,36 @@ export default function HomePage() {
     try {
       await startResearch(company.trim(), user?.token)
       router.push(`/research/${encodeURIComponent(company.trim().toLowerCase())}`)
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to start research')
+    } catch (err: any) {
+      if (err.message === 'free_limit_reached' || err.message === 'You must be logged in to analyze a company.') {
+        if (err.message === 'free_limit_reached') {
+          setPendingCompany(company.trim())
+          setPromptReason('free_limit')
+          setShowApiKeyPrompt(true)
+        } else {
+          setError(err.message)
+        }
+      } else {
+        setError(err.message || 'Failed to start research')
+      }
       setLoading(false)
+    }
+  }
+
+  const handleSaveApiKey = async () => {
+    if (!apiKey.trim()) return
+    setSavingApiKey(true)
+    setError(null)
+    try {
+      await saveUserApiKey(apiKey.trim(), user?.token)
+      setShowApiKeyPrompt(false)
+      // Resume research
+      if (pendingCompany) {
+        handleSearch(pendingCompany)
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to save API key')
+      setSavingApiKey(false)
     }
   }
 
@@ -86,7 +132,43 @@ export default function HomePage() {
           </p>
 
           {/* Search */}
-          <SearchBar onSearch={handleSearch} loading={loading} />
+          {!showApiKeyPrompt ? (
+            <SearchBar onSearch={handleSearch} loading={loading} />
+          ) : (
+            <div className="flex flex-col items-center animate-fade-in gap-4 w-full max-w-xl mx-auto">
+              <p className="text-slate-300 text-sm mb-2">
+                {promptReason === 'quota'
+                  ? "Our backend API quota is temporarily exceeded. Please provide your own Google Gemini API key to continue."
+                  : "You've used your one free analysis. To continue researching companies, please enter your own Google Gemini API key."}
+                <br/>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-brand-400 hover:text-brand-300 underline mt-1 block">
+                  Get your free API key from Google AI Studio
+                </a>
+              </p>
+              <input
+                type="password"
+                placeholder="Paste your Gemini API key here..."
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                className="w-full px-5 py-4 rounded-2xl bg-slate-800/80 border border-slate-700/60 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition-all duration-200"
+              />
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowApiKeyPrompt(false)}
+                  className="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveApiKey}
+                  disabled={savingApiKey || !apiKey.trim()}
+                  className="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-medium transition-colors disabled:opacity-50"
+                >
+                  {savingApiKey ? 'Saving...' : 'Save & Continue'}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Error */}
           {error && (

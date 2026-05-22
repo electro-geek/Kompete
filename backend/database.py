@@ -45,6 +45,12 @@ def init_db():
                     UNIQUE(user_id, company)
                 )
             """)
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS user_settings (
+                    user_id VARCHAR(255) PRIMARY KEY,
+                    encrypted_api_key TEXT NOT NULL
+                )
+            """)
             conn.commit()
             cursor.close()
             conn.close()
@@ -72,11 +78,131 @@ def init_db():
                 UNIQUE(user_id, company)
             )
         """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS user_settings (
+                user_id TEXT PRIMARY KEY,
+                encrypted_api_key TEXT NOT NULL
+            )
+        """)
         conn_sqlite.commit()
         conn_sqlite.close()
         logger.info(f"SQLite database initialized at {DB_PATH}")
     except Exception as e:
         logger.error(f"Failed to initialize SQLite database: {e}")
+
+# Simple encryption helper
+import base64
+from config import ENCRYPTION_KEY
+
+def _get_fernet():
+    try:
+        from cryptography.fernet import Fernet
+        import hashlib
+        import base64
+        # Derive a valid 32-byte url-safe base64 key from whatever string the user provided
+        key_bytes = ENCRYPTION_KEY.encode('utf-8')
+        derived_key = base64.urlsafe_b64encode(hashlib.sha256(key_bytes).digest())
+        return Fernet(derived_key)
+    except ImportError:
+        return None
+
+def encrypt_key(api_key: str) -> str:
+    f = _get_fernet()
+    if f:
+        return f.encrypt(api_key.encode()).decode()
+    return base64.b64encode(api_key.encode()).decode()
+
+def decrypt_key(encrypted_key: str) -> str:
+    f = _get_fernet()
+    if f:
+        return f.decrypt(encrypted_key.encode()).decode()
+    return base64.b64decode(encrypted_key.encode()).decode()
+
+def save_user_api_key(user_id: str, api_key: str) -> bool:
+    if not user_id: return False
+    enc_key = encrypt_key(api_key)
+    conn = get_postgres_connection()
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO user_settings (user_id, encrypted_api_key)
+                VALUES (%s, %s)
+                ON CONFLICT(user_id) DO UPDATE SET encrypted_api_key = EXCLUDED.encrypted_api_key
+            """, (user_id, enc_key))
+            conn.commit()
+            return True
+        except Exception as e:
+            pass
+        finally:
+            if conn: conn.close()
+            
+    try:
+        conn_sqlite = sqlite3.connect(str(DB_PATH))
+        cursor = conn_sqlite.cursor()
+        cursor.execute("""
+            INSERT INTO user_settings (user_id, encrypted_api_key)
+            VALUES (?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET encrypted_api_key = excluded.encrypted_api_key
+        """, (user_id, enc_key))
+        conn_sqlite.commit()
+        return True
+    except Exception:
+        return False
+    finally:
+        if 'conn_sqlite' in locals(): conn_sqlite.close()
+
+def get_user_api_key(user_id: str) -> str | None:
+    if not user_id: return None
+    conn = get_postgres_connection()
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT encrypted_api_key FROM user_settings WHERE user_id = %s", (user_id,))
+            row = cursor.fetchone()
+            if row: return decrypt_key(row[0])
+        except Exception:
+            pass
+        finally:
+            if conn: conn.close()
+            
+    try:
+        conn_sqlite = sqlite3.connect(str(DB_PATH))
+        cursor = conn_sqlite.cursor()
+        cursor.execute("SELECT encrypted_api_key FROM user_settings WHERE user_id = ?", (user_id,))
+        row = cursor.fetchone()
+        if row: return decrypt_key(row[0])
+    except Exception:
+        pass
+    finally:
+        if 'conn_sqlite' in locals(): conn_sqlite.close()
+    return None
+
+def count_user_reports(user_id: str) -> int:
+    if not user_id: return 0
+    conn = get_postgres_connection()
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT COUNT(DISTINCT company) FROM reports WHERE user_id = %s", (user_id,))
+            row = cursor.fetchone()
+            if row: return int(row[0])
+        except Exception:
+            pass
+        finally:
+            if conn: conn.close()
+            
+    try:
+        conn_sqlite = sqlite3.connect(str(DB_PATH))
+        cursor = conn_sqlite.cursor()
+        cursor.execute("SELECT COUNT(DISTINCT company) FROM reports WHERE user_id = ?", (user_id,))
+        row = cursor.fetchone()
+        if row: return int(row[0])
+    except Exception:
+        pass
+    finally:
+        if 'conn_sqlite' in locals(): conn_sqlite.close()
+    return 0
 
 def save_report(user_id: str, company: str, report_data: dict) -> bool:
     """Save or update a competitor intelligence report for a specific user."""

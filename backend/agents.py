@@ -54,7 +54,7 @@ _SAFETY_SETTINGS = [
 
 # ── Individual research agents ─────────────────────────────────────────────────
 
-async def _run_agent(prompt: str, use_search: bool = True, response_mime_type: str | None = None) -> str:
+async def _run_agent(prompt: str, use_search: bool = True, response_mime_type: str | None = None, api_key: str | None = None) -> str:
     """Run a single Gemini call, optionally with Google Search grounding, with robust exponential backoff retry."""
     import random
     from google.genai import errors
@@ -69,6 +69,8 @@ async def _run_agent(prompt: str, use_search: bool = True, response_mime_type: s
         response_mime_type=response_mime_type,
     )
     
+    local_client = genai.Client(api_key=api_key) if api_key else client
+    
     max_retries = 6
     backoff_factor = 2.0
     
@@ -77,7 +79,7 @@ async def _run_agent(prompt: str, use_search: bool = True, response_mime_type: s
             loop = asyncio.get_event_loop()
             response = await loop.run_in_executor(
                 None,
-                lambda: client.models.generate_content(
+                lambda: local_client.models.generate_content(
                     model=GEMINI_MODEL,
                     contents=prompt,
                     config=config,
@@ -89,6 +91,8 @@ async def _run_agent(prompt: str, use_search: bool = True, response_mime_type: s
             if e.code in (429, 503, 500, 502, 504) or "overload" in str(e).lower() or "quota" in str(e).lower() or "demand" in str(e).lower():
                 if attempt == max_retries:
                     logger.error(f"❌ Max retries reached for Gemini call. Failing on: {e}")
+                    if e.code == 429 or "quota" in str(e).lower():
+                        raise ValueError("quota_exceeded")
                     raise e
                 
                 sleep_time = (backoff_factor ** attempt) + random.uniform(0.5, 1.5)
@@ -113,7 +117,7 @@ async def _run_agent(prompt: str, use_search: bool = True, response_mime_type: s
             await asyncio.sleep(sleep_time)
 
 
-async def research_news(company: str) -> dict:
+async def research_news(company: str, api_key: str | None = None) -> dict:
     prompt = f"""You are a financial news researcher. Search the web and find the latest news about "{company}".
 
 Focus on:
@@ -134,7 +138,7 @@ Return a JSON object with these exact keys:
 
 Return ONLY valid JSON, no markdown fences."""
 
-    text = await _run_agent(prompt)
+    text = await _run_agent(prompt, api_key=api_key)
     try:
         return json.loads(_clean_json(text))
     except Exception:
@@ -142,7 +146,7 @@ Return ONLY valid JSON, no markdown fences."""
         return {"raw": text, "data_sources": []}
 
 
-async def research_financials(company: str) -> dict:
+async def research_financials(company: str, api_key: str | None = None) -> dict:
     prompt = f"""You are a financial analyst. Search the web and find financial data about "{company}".
 
 Focus on:
@@ -177,7 +181,7 @@ Return a JSON object with these exact keys:
 
 Return ONLY valid JSON, no markdown fences."""
 
-    text = await _run_agent(prompt)
+    text = await _run_agent(prompt, api_key=api_key)
     try:
         return json.loads(_clean_json(text))
     except Exception:
@@ -185,7 +189,7 @@ Return ONLY valid JSON, no markdown fences."""
         return {"raw": text, "funding_history": [], "data_sources": []}
 
 
-async def research_reviews(company: str) -> dict:
+async def research_reviews(company: str, api_key: str | None = None) -> dict:
     prompt = f"""You are a customer sentiment analyst. Search G2, Trustpilot, Glassdoor, Reddit, and app stores for reviews and sentiment about "{company}".
 
 Focus on:
@@ -208,7 +212,7 @@ Return a JSON object with these exact keys:
 
 Return ONLY valid JSON, no markdown fences."""
 
-    text = await _run_agent(prompt)
+    text = await _run_agent(prompt, api_key=api_key)
     try:
         return json.loads(_clean_json(text))
     except Exception:
@@ -216,7 +220,7 @@ Return ONLY valid JSON, no markdown fences."""
         return {"raw": text, "sentiment_score": 5, "data_sources": []}
 
 
-async def research_social(company: str) -> dict:
+async def research_social(company: str, api_key: str | None = None) -> dict:
     prompt = f"""You are a social media and brand analyst. Search the web for "{company}"'s social media presence and brand perception.
 
 Focus on:
@@ -256,6 +260,7 @@ async def synthesize_report(
     financials: dict,
     reviews: dict,
     social: dict,
+    api_key: str | None = None,
 ) -> dict:
     prompt = f"""You are a senior competitive intelligence analyst. Based on the following research data about "{company}", produce a comprehensive competitive intelligence report.
 
@@ -349,7 +354,7 @@ Synthesize all this data into a structured report. Return a JSON object with EXA
 Be specific and evidence-backed. Reference actual data points from the research. Do NOT use generic platitudes.
 Return ONLY valid JSON, no markdown fences."""
 
-    text = await _run_agent(prompt, use_search=False, response_mime_type="application/json")
+    text = await _run_agent(prompt, use_search=False, response_mime_type="application/json", api_key=api_key)
     try:
         result = json.loads(_clean_json(text))
         # Ensure sentiment_score is an int
@@ -365,6 +370,7 @@ Return ONLY valid JSON, no markdown fences."""
 async def run_research_pipeline(
     company: str,
     progress_callback: callable = None,
+    api_key: str | None = None,
 ) -> dict:
     """
     Run all four research agents in parallel, then synthesize.
@@ -381,22 +387,22 @@ async def run_research_pipeline(
     await _notify("started")
 
     async def _news_with_notify():
-        result = await research_news(company)
+        result = await research_news(company, api_key=api_key)
         await _notify("news_done")
         return result
 
     async def _financials_with_notify():
-        result = await research_financials(company)
+        result = await research_financials(company, api_key=api_key)
         await _notify("financials_done")
         return result
 
     async def _reviews_with_notify():
-        result = await research_reviews(company)
+        result = await research_reviews(company, api_key=api_key)
         await _notify("reviews_done")
         return result
 
     async def _social_with_notify():
-        result = await research_social(company)
+        result = await research_social(company, api_key=api_key)
         await _notify("social_done")
         return result
 
@@ -418,7 +424,7 @@ async def run_research_pipeline(
 
     await _notify("synthesizing")
 
-    report = await synthesize_report(company, news, financials, reviews, social)
+    report = await synthesize_report(company, news, financials, reviews, social, api_key=api_key)
 
     await _notify("synthesis_done")
 
