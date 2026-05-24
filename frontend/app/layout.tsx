@@ -10,6 +10,21 @@ export const metadata: Metadata = {
     title: 'Kompete — AI Competitor Intelligence',
     description: 'Boardroom-ready competitive intelligence reports in 60 seconds.',
     type: 'website',
+    url: 'https://prepstudio.mritunjay.live',
+    images: [
+      {
+        url: 'https://prepstudio.mritunjay.live/preview.png',
+        width: 1200,
+        height: 630,
+        alt: 'Kompete — AI Competitor Intelligence',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Kompete — AI Competitor Intelligence',
+    description: 'Boardroom-ready competitive intelligence reports in 60 seconds.',
+    images: ['https://prepstudio.mritunjay.live/preview.png'],
   },
 }
 
