@@ -1,29 +1,41 @@
-interface InsightsListProps {
-  insights: string[]
-}
+interface InsightsListProps { insights: string[] }
 
 export default function InsightsList({ insights }: InsightsListProps) {
   const items = Array.isArray(insights) ? insights : []
+
   return (
     <section>
-      <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-        <span>💡</span>Key Insights
-      </h2>
-      <div className="space-y-3">
+      <h2 className="section-label">Key Insights</h2>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {items.map((insight, i) => (
           <div
             key={i}
-            className="glass rounded-xl p-4 border border-slate-800/60 hover:border-brand-500/30 transition-all duration-200 hover:-translate-x-1 flex items-start gap-3"
+            style={{
+              display: 'flex', alignItems: 'flex-start', gap: '14px',
+              background: 'var(--surface)', border: '1px solid var(--border)',
+              borderRadius: '12px', padding: '16px 18px',
+              transition: 'border-color 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent-border)')}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
           >
-            <span className="w-7 h-7 rounded-lg bg-brand-500/20 border border-brand-500/30 flex items-center justify-center text-brand-300 text-xs font-bold flex-shrink-0">
+            <span className="mono" style={{
+              fontSize: '11px', fontWeight: '600', color: 'var(--accent-light)',
+              width: '22px', height: '22px', borderRadius: '6px',
+              background: 'var(--accent-bg)', border: '1px solid var(--accent-border)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, marginTop: '1px',
+            }}>
               {i + 1}
             </span>
-            <p className="text-slate-300 text-sm leading-relaxed">{insight}</p>
+            <p style={{ fontSize: '14px', color: 'var(--fg-dim)', margin: 0, lineHeight: '1.7', flex: 1 }}>
+              {insight}
+            </p>
           </div>
         ))}
         {items.length === 0 && (
-          <div className="glass rounded-xl p-4 border border-slate-800/60 text-slate-500 text-sm italic">
-            No insights available.
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px 18px' }}>
+            <p style={{ fontSize: '13px', color: 'var(--fg-subtle)', fontStyle: 'italic', margin: 0 }}>No insights available.</p>
           </div>
         )}
       </div>

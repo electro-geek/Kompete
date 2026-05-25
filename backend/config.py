@@ -54,6 +54,7 @@ ENCRYPTION_KEY: str = _get("ENCRYPTION_KEY", "b4Uv7GkL8a2X9mN3pY5qR6wS1tE0zV4c="
 
 # Access Control
 ADMIN_EMAILS: list[str] = [e.strip() for e in _get("ADMIN_EMAILS", "").split(",") if e.strip()]
+ADMIN_SECRET: str = _get("ADMIN_SECRET", "changeme-admin-secret")
 
 # Server
 HOST: str = _get("HOST", "0.0.0.0")

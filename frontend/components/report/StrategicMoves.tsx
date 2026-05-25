@@ -1,29 +1,41 @@
-interface StrategicMovesProps {
-  moves?: string[]
-}
+interface StrategicMovesProps { moves?: string[] }
 
 export default function StrategicMoves({ moves }: StrategicMovesProps) {
   const items = Array.isArray(moves) ? moves : []
+
   return (
     <section>
-      <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-        <span>♟️</span>Strategic Moves
-      </h2>
-      <div className="grid sm:grid-cols-2 gap-4">
+      <h2 className="section-label">Strategic Moves</h2>
+      <div className="grid sm:grid-cols-2 gap-3">
         {items.map((move, i) => (
           <div
             key={i}
-            className="glass rounded-xl p-5 border border-slate-800/60 hover:border-purple-500/30 transition-all duration-300 flex items-start gap-3 bg-gradient-to-br from-slate-900/50 to-slate-900/20"
+            style={{
+              display: 'flex', alignItems: 'flex-start', gap: '14px',
+              background: 'var(--surface)', border: '1px solid var(--border)',
+              borderRadius: '12px', padding: '16px 18px',
+              transition: 'border-color 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(167,139,250,0.3)')}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
           >
-            <span className="w-8 h-8 rounded-full bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 font-bold flex-shrink-0 mt-0.5">
+            <span className="mono" style={{
+              fontSize: '11px', fontWeight: '600', color: '#a78bfa',
+              width: '22px', height: '22px', borderRadius: '50%',
+              background: 'rgba(167,139,250,0.1)', border: '1px solid rgba(167,139,250,0.25)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, marginTop: '1px',
+            }}>
               {i + 1}
             </span>
-            <p className="text-slate-300 text-sm leading-relaxed">{move}</p>
+            <p style={{ fontSize: '14px', color: 'var(--fg-dim)', margin: 0, lineHeight: '1.7', flex: 1 }}>
+              {move}
+            </p>
           </div>
         ))}
         {items.length === 0 && (
-          <div className="glass col-span-full rounded-xl p-4 border border-slate-800/60 text-slate-500 text-sm italic">
-            No recent strategic moves identified.
+          <div style={{ gridColumn: '1 / -1', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '16px 18px' }}>
+            <p style={{ fontSize: '13px', color: 'var(--fg-subtle)', fontStyle: 'italic', margin: 0 }}>No recent strategic moves identified.</p>
           </div>
         )}
       </div>

@@ -235,6 +235,61 @@ async def save_user_settings(body: UserSettingsReq, request: Request):
         return {"status": "success"}
     raise HTTPException(status_code=500, detail="Failed to save settings")
 
+
+# ── Admin routes ───────────────────────────────────────────────────────────────
+
+def _verify_admin_secret(request: Request) -> None:
+    """Raise 403 if the request does not carry the correct admin secret."""
+    from config import ADMIN_SECRET
+    auth = request.headers.get("X-Admin-Secret", "")
+    if not auth or auth != ADMIN_SECRET:
+        raise HTTPException(status_code=403, detail="Forbidden: invalid admin secret")
+
+
+@app.get("/admin/users", tags=["Admin"])
+async def admin_list_users(request: Request):
+    """
+    Admin: list all users with aggregated stats.
+    Requires X-Admin-Secret header.
+    """
+    _verify_admin_secret(request)
+    from database import get_all_users
+    users = get_all_users()
+    return {"total": len(users), "users": users}
+
+
+@app.get("/admin/stats", tags=["Admin"])
+async def admin_stats(request: Request):
+    """
+    Admin: return platform-level aggregate stats.
+    Requires X-Admin-Secret header.
+    """
+    _verify_admin_secret(request)
+    from database import get_all_users
+    users = get_all_users()
+    total_users = len(users)
+    total_reports = sum(u["report_count"] for u in users)
+    users_with_key = sum(1 for u in users if u["has_api_key"])
+    users_on_free_tier = total_users - users_with_key
+    return {
+        "total_users": total_users,
+        "total_reports": total_reports,
+        "users_with_api_key": users_with_key,
+        "users_on_free_tier": users_on_free_tier,
+    }
+
+
+@app.get("/admin/users/{user_id}/reports", tags=["Admin"])
+async def admin_user_reports(user_id: str, request: Request):
+    """
+    Admin: list all reports for a specific user.
+    Requires X-Admin-Secret header.
+    """
+    _verify_admin_secret(request)
+    from database import get_reports_for_user
+    reports = get_reports_for_user(user_id)
+    return {"user_id": user_id, "reports": reports}
+
 @app.post("/research", tags=["Research"])
 async def start_research(body: ResearchRequest, request: Request, background_tasks: BackgroundTasks):
     """
@@ -253,6 +308,12 @@ async def start_research(body: ResearchRequest, request: Request, background_tas
     
     user_id = claims.get("uid") or claims.get("sub")
     user_email = claims.get("email", "")
+    user_name = claims.get("name", "") or claims.get("display_name", "")
+
+    # Persist name/email so the admin dashboard can show readable info
+    if user_id:
+        from database import upsert_user_profile
+        upsert_user_profile(user_id, email=user_email, name=user_name)
 
     if job_status.get(key) == "running":
         return {"job_id": key, "status": "already_running"}
@@ -264,19 +325,14 @@ async def start_research(body: ResearchRequest, request: Request, background_tas
             save_report(user_id, company, report_cache[key])
         return {"job_id": key, "status": "cached"}
 
-    # Check database fallback if cached in database
+    # Check if report is already in the database (Postgres)
     if user_id:
         try:
-            import sqlite3
-            from database import DB_PATH
-            conn = sqlite3.connect(str(DB_PATH))
-            cursor = conn.cursor()
-            cursor.execute("SELECT report_data FROM reports WHERE user_id = ? AND company = ?", (user_id, key))
-            row = cursor.fetchone()
-            conn.close()
-            if row:
-                report_data = json.loads(row[0])
-                report_cache[key] = report_data
+            from database import get_reports_for_user
+            user_reports = get_reports_for_user(user_id)
+            match = next((r for r in user_reports if r["company"] == key), None)
+            if match:
+                report_cache[key] = match["report"]
                 job_status[key] = "done"
                 return {"job_id": key, "status": "cached"}
         except Exception as e:
@@ -376,21 +432,16 @@ async def get_report(company: str, request: Request):
     if key in report_cache:
         return report_cache[key]
 
-    # Try database fallback if user is logged in
+    # Try Postgres via database layer
     if user_id:
         try:
-            import sqlite3
-            from database import DB_PATH
-            conn = sqlite3.connect(str(DB_PATH))
-            cursor = conn.cursor()
-            cursor.execute("SELECT report_data FROM reports WHERE user_id = ? AND company = ?", (user_id, key))
-            row = cursor.fetchone()
-            conn.close()
-            if row:
-                report_data = json.loads(row[0])
-                report_cache[key] = report_data
+            from database import get_reports_for_user
+            user_reports = get_reports_for_user(user_id)
+            match = next((r for r in user_reports if r["company"] == key), None)
+            if match:
+                report_cache[key] = match["report"]
                 job_status[key] = "done"
-                return report_data
+                return match["report"]
         except Exception as e:
             logger.error(f"Failed database lookup on get_report: {e}")
 
@@ -415,16 +466,11 @@ async def download_pdf(company: str, request: Request):
         report = report_cache[key]
     elif user_id:
         try:
-            import sqlite3
-            from database import DB_PATH
-            conn = sqlite3.connect(str(DB_PATH))
-            cursor = conn.cursor()
-            cursor.execute("SELECT report_data FROM reports WHERE user_id = ? AND company = ?", (user_id, key))
-            row = cursor.fetchone()
-            conn.close()
-            if row:
-                report = json.loads(row[0])
-                # Populate cache
+            from database import get_reports_for_user
+            user_reports = get_reports_for_user(user_id)
+            match = next((r for r in user_reports if r["company"] == key), None)
+            if match:
+                report = match["report"]
                 report_cache[key] = report
                 job_status[key] = "done"
         except Exception as e:

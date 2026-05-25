@@ -4,10 +4,11 @@ import { useParams, useRouter } from 'next/navigation'
 import ProgressTracker from '@/components/ProgressTracker'
 import { useResearchStream } from '@/hooks/useResearchStream'
 import { useEffect } from 'react'
+import Link from 'next/link'
 
 export default function ResearchPage() {
-  const params = useParams()
-  const router = useRouter()
+  const params  = useParams()
+  const router  = useRouter()
   const company = decodeURIComponent((params?.company as string) || '')
   const displayName = company.charAt(0).toUpperCase() + company.slice(1)
 
@@ -20,34 +21,49 @@ export default function ResearchPage() {
   }, [error, router, company])
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-16 relative overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-brand-600/10 rounded-full blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:60px_60px] opacity-20" />
-      </div>
+    <main className="min-h-screen flex flex-col items-center justify-center px-4 py-16">
+      <div className="w-full max-w-md mx-auto">
+        {/* Back */}
+        <Link
+          href="/"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '5px',
+            fontSize: '13px', color: 'var(--fg-dim)', marginBottom: '36px',
+            textDecoration: 'none', transition: 'color 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--fg)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--fg-dim)')}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+            <path d="M19 12H5M5 12l7-7M5 12l7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Back to search
+        </Link>
 
-      <div className="relative z-10 w-full max-w-lg mx-auto">
         {/* Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 text-brand-300 text-sm font-medium mb-6">
-            <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+        <div style={{ marginBottom: '28px' }}>
+          <span className="badge badge-amber animate-fade-in" style={{ display: 'inline-flex', marginBottom: '16px' }}>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--amber)', flexShrink: 0 }} className="animate-pulse" />
             Researching in progress
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-2">
-            Analysing <span className="gradient-text">{displayName}</span>
+          </span>
+          <h1 style={{ fontSize: '26px', fontWeight: '600', color: 'var(--fg)', margin: '0 0 8px', lineHeight: 1.2 }}>
+            Analysing{' '}
+            <span className="display italic" style={{ color: 'var(--accent-light)' }}>{displayName}</span>
           </h1>
-          <p className="text-slate-400 text-sm">
-            Four AI agents are browsing the web in parallel. This takes about 45–60 seconds.
+          <p style={{ fontSize: '14px', color: 'var(--fg-dim)', margin: 0, lineHeight: '1.6' }}>
+            Four AI agents are browsing the web. This takes about 45–60 seconds.
           </p>
         </div>
 
         {/* Progress */}
         <ProgressTracker progress={progress} error={error} />
 
-        {/* Animated progress bar */}
-        <div className="mt-8 w-full h-1 bg-slate-800 rounded-full overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-brand-500 via-purple-500 to-cyan-500 rounded-full animate-progress-bar" />
+        {/* Progress bar */}
+        <div style={{ marginTop: '20px', height: '2px', background: 'var(--border)', borderRadius: '2px', overflow: 'hidden' }}>
+          <div
+            className="animate-progress-bar"
+            style={{ height: '100%', background: 'var(--accent)', borderRadius: '2px' }}
+          />
         </div>
       </div>
     </main>

@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" fill="none">
+  <!-- Canvas -->
+  <rect width="1200" height="800" fill="#0a0a10"/>
+
+  <!-- Grid gutters: 3 cols × 2 rows, 24px gutters, 24px outer margin -->
+  <!-- Col widths: (1200 - 48 - 2×24) / 3 = 368px each -->
+  <!-- Row heights: (800 - 24 - 24 - 24) / 2 = 364px each -->
+
+  <!-- ── Panel 1: Logo Cover (col 1-2, row 1) ── -->
+  <rect x="24" y="24" width="760" height="364" rx="12" fill="#0e0e18"/>
+  <!-- Large logo mark -->
+  <rect x="265" y="110" width="120" height="120" rx="28" fill="url(#bg-grad)"/>
+  <line x1="287" y1="127" x2="287" y2="213" stroke="white" stroke-width="9" stroke-linecap="round"/>
+  <line x1="287" y1="170" x2="368" y2="127" stroke="white" stroke-width="9" stroke-linecap="round"/>
+  <line x1="287" y1="170" x2="368" y2="213" stroke="white" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="287" cy="170" r="7" fill="rgba(199,210,254,0.95)"/>
+  <!-- Wordmark -->
+  <text x="406" y="162" font-family="Syne, sans-serif" font-weight="800" font-size="52" fill="#f0f0f5" letter-spacing="-3">Kompete</text>
+  <text x="406" y="195" font-family="Inter, sans-serif" font-weight="400" font-size="16" fill="#7878a0" letter-spacing="0.5">AI COMPETITIVE INTELLIGENCE</text>
+  <!-- Panel label -->
+  <text x="44" y="370" font-family="Inter, sans-serif" font-size="11" fill="#46465e" letter-spacing="2">01 — BRAND MARK</text>
+
+  <!-- ── Panel 2: Color System (col 3, row 1) ── -->
+  <rect x="808" y="24" width="368" height="364" rx="12" fill="#0e0e18"/>
+  <text x="828" y="60" font-family="Inter, sans-serif" font-size="11" fill="#46465e" letter-spacing="2">02 — COLOR SYSTEM</text>
+  <!-- Primary indigo -->
+  <rect x="828" y="76" width="328" height="64" rx="8" fill="#6366f1"/>
+  <text x="844" y="103" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="white">Indigo — Primary</text>
+  <text x="844" y="123" font-family="ui-monospace, monospace" font-size="11" fill="rgba(255,255,255,0.65)">#6366F1</text>
+  <!-- Violet -->
+  <rect x="828" y="152" width="328" height="48" rx="8" fill="#7c3aed"/>
+  <text x="844" y="172" font-family="Inter, sans-serif" font-weight="600" font-size="13" fill="white">Violet — Gradient End</text>
+  <text x="844" y="189" font-family="ui-monospace, monospace" font-size="11" fill="rgba(255,255,255,0.65)">#7C3AED</text>
+  <!-- Light indigo -->
+  <rect x="828" y="212" width="328" height="40" rx="8" fill="#818cf8"/>
+  <text x="844" y="228" font-family="Inter, sans-serif" font-weight="500" font-size="12" fill="white">Indigo Light — Accent Text</text>
+  <text x="844" y="243" font-family="ui-monospace, monospace" font-size="11" fill="rgba(255,255,255,0.65)">#818CF8</text>
+  <!-- Neutrals row -->
+  <rect x="828" y="264" width="60" height="40" rx="6" fill="#08080d"/>
+  <rect x="896" y="264" width="60" height="40" rx="6" fill="#0c0c14"/>
+  <rect x="964" y="264" width="60" height="40" rx="6" fill="#121220"/>
+  <rect x="1032" y="264" width="60" height="40" rx="6" fill="#1a1a28"/>
+  <rect x="1100" y="264" width="56" height="40" rx="6" fill="#f0f0f5"/>
+  <text x="828" y="320" font-family="ui-monospace, monospace" font-size="10" fill="#46465e">#08080D   #0C0C14   #12122   #1A1A28   #F0F0F5</text>
+  <!-- Junction dot shown as brand element -->
+  <circle cx="858" cy="356" r="8" fill="rgba(199,210,254,0.9)"/>
+  <text x="876" y="360" font-family="Inter, sans-serif" font-size="11" fill="#7878a0">Junction accent — rgba(199,210,254,0.95)</text>
+
+  <!-- ── Panel 3: Logo Construction (col 1, row 2) ── -->
+  <rect x="24" y="412" width="368" height="364" rx="12" fill="#0e0e18"/>
+  <text x="44" y="448" font-family="Inter, sans-serif" font-size="11" fill="#46465e" letter-spacing="2">03 — CONSTRUCTION</text>
+  <!-- Construction grid lines (subtle) -->
+  <line x1="184" y1="470" x2="184" y2="740" stroke="#1a1a28" stroke-width="1" stroke-dasharray="4 4"/>
+  <line x1="44" y1="600" x2="350" y2="600" stroke="#1a1a28" stroke-width="1" stroke-dasharray="4 4"/>
+  <!-- Large K construction diagram -->
+  <!-- Vertical bar -->
+  <line x1="140" y1="490" x2="140" y2="710" stroke="#6366f1" stroke-width="6" stroke-linecap="round"/>
+  <!-- Upper diagonal -->
+  <line x1="140" y1="600" x2="280" y2="490" stroke="#7c3aed" stroke-width="6" stroke-linecap="round"/>
+  <!-- Lower diagonal -->
+  <line x1="140" y1="600" x2="280" y2="710" stroke="#7c3aed" stroke-width="6" stroke-linecap="round"/>
+  <!-- Junction dot with ring -->
+  <circle cx="140" cy="600" r="18" stroke="#6366f1" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <circle cx="140" cy="600" r="10" fill="rgba(199,210,254,0.95)"/>
+  <!-- Measurement lines -->
+  <line x1="110" y1="490" x2="110" y2="710" stroke="#46465e" stroke-width="0.5"/>
+  <line x1="106" y1="490" x2="114" y2="490" stroke="#46465e" stroke-width="0.5"/>
+  <line x1="106" y1="710" x2="114" y2="710" stroke="#46465e" stroke-width="0.5"/>
+  <text x="88" y="605" font-family="ui-monospace, monospace" font-size="10" fill="#46465e" text-anchor="middle">220u</text>
+  <!-- Angle label -->
+  <text x="240" y="555" font-family="ui-monospace, monospace" font-size="10" fill="#46465e">39°</text>
+  <text x="44" y="762" font-family="Inter, sans-serif" font-size="11" fill="#46465e" letter-spacing="2">04 — MINIMUM SIZE: 16px</text>
+
+  <!-- ── Panel 4: Typography (col 2, row 2) ── -->
+  <rect x="404" y="412" width="368" height="364" rx="12" fill="#0e0e18"/>
+  <text x="424" y="448" font-family="Inter, sans-serif" font-size="11" fill="#46465e" letter-spacing="2">04 — TYPOGRAPHY</text>
+  <text x="424" y="512" font-family="Syne, sans-serif" font-weight="800" font-size="44" fill="#f0f0f5" letter-spacing="-2">Syne 800</text>
+  <text x="424" y="538" font-family="Inter, sans-serif" font-size="12" fill="#7878a0">Display headings · Brand wordmark</text>
+  <line x1="424" y1="556" x2="752" y2="556" stroke="#1a1a28" stroke-width="1"/>
+  <text x="424" y="590" font-family="Instrument Serif, Georgia, serif" font-style="italic" font-size="36" fill="rgba(199,210,254,0.9)">Instrument Serif</text>
+  <text x="424" y="612" font-family="Inter, sans-serif" font-size="12" fill="#7878a0">Italic display accent · Hero subtext</text>
+  <line x1="424" y1="630" x2="752" y2="630" stroke="#1a1a28" stroke-width="1"/>
+  <text x="424" y="660" font-family="Inter, sans-serif" font-weight="400" font-size="22" fill="#f0f0f5">Inter 400 / 500 / 600</text>
+  <text x="424" y="680" font-family="Inter, sans-serif" font-size="12" fill="#7878a0">Body · UI · Labels</text>
+  <line x1="424" y1="696" x2="752" y2="696" stroke="#1a1a28" stroke-width="1"/>
+  <text x="424" y="724" font-family="ui-monospace, monospace" font-size="18" fill="#818cf8">01 / #6366F1 / 60s</text>
+  <text x="424" y="744" font-family="Inter, sans-serif" font-size="12" fill="#7878a0">System monospace · Numbers · IDs</text>
+  <text x="424" y="768" font-family="Inter, sans-serif" font-size="11" fill="#46465e" letter-spacing="2">05 — TYPE SYSTEM</text>
+
+  <!-- ── Panel 5: UI Application (col 3, row 2) ── -->
+  <rect x="784" y="412" width="392" height="364" rx="12" fill="#0e0e18"/>
+  <text x="804" y="448" font-family="Inter, sans-serif" font-size="11" fill="#46465e" letter-spacing="2">06 — UI APPLICATION</text>
+  <!-- Simulated app header -->
+  <rect x="820" y="464" width="336" height="48" rx="8" fill="#0c0c14" stroke="#1a1a28" stroke-width="1"/>
+  <!-- Logo in header -->
+  <rect x="836" y="478" width="20" height="20" rx="5" fill="url(#ui-grad)"/>
+  <line x1="841" y1="482" x2="841" y2="494" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="841" y1="488" x2="849" y2="482" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="841" y1="488" x2="849" y2="494" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+  <circle cx="841" cy="488" r="1.4" fill="rgba(199,210,254,0.9)"/>
+  <text x="862" y="492" font-family="Syne, sans-serif" font-weight="800" font-size="12" fill="#f0f0f5">Kompete</text>
+  <!-- Sign in button in header -->
+  <rect x="1068" y="473" width="72" height="28" rx="7" fill="url(#btn-grad)"/>
+  <text x="1104" y="491" font-family="Inter, sans-serif" font-weight="600" font-size="11" fill="white" text-anchor="middle">Sign in</text>
+  <!-- Simulated search bar -->
+  <rect x="820" y="528" width="336" height="52" rx="12" fill="#0c0c14" stroke="#1a1a28" stroke-width="1"/>
+  <!-- Search icon -->
+  <circle cx="844" cy="554" r="7" stroke="#46465e" stroke-width="1.5" fill="none"/>
+  <line x1="849" y1="559" x2="854" y2="564" stroke="#46465e" stroke-width="1.5" stroke-linecap="round"/>
+  <text x="864" y="558" font-family="Inter, sans-serif" font-size="13" fill="#46465e">Enter a company — Notion, Stripe…</text>
+  <!-- Research button -->
+  <rect x="1072" y="534" width="76" height="40" rx="10" fill="url(#btn-grad)"/>
+  <text x="1110" y="559" font-family="Inter, sans-serif" font-weight="600" font-size="11" fill="white" text-anchor="middle">Research →</text>
+  <!-- Feature chips row -->
+  <rect x="820" y="596" width="76" height="26" rx="13" fill="#121220" stroke="#1a1a28" stroke-width="1"/>
+  <text x="858" y="613" font-family="Inter, sans-serif" font-size="11" fill="#7878a0" text-anchor="middle">Notion</text>
+  <rect x="904" y="596" width="64" height="26" rx="13" fill="#121220" stroke="#1a1a28" stroke-width="1"/>
+  <text x="936" y="613" font-family="Inter, sans-serif" font-size="11" fill="#7878a0" text-anchor="middle">Stripe</text>
+  <rect x="976" y="596" width="60" height="26" rx="13" fill="#121220" stroke="#1a1a28" stroke-width="1"/>
+  <text x="1006" y="613" font-family="Inter, sans-serif" font-size="11" fill="#7878a0" text-anchor="middle">Figma</text>
+  <!-- Icon mark solo large -->
+  <rect x="820" y="638" width="80" height="80" rx="18" fill="url(#bg-grad2)"/>
+  <line x1="843" y1="652" x2="843" y2="704" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="843" y1="678" x2="882" y2="652" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="843" y1="678" x2="882" y2="704" stroke="white" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="843" cy="678" r="5.5" fill="rgba(199,210,254,0.95)"/>
+  <!-- Tagline -->
+  <text x="918" y="668" font-family="Syne, sans-serif" font-weight="800" font-size="20" fill="#f0f0f5">Know your</text>
+  <text x="918" y="694" font-family="Syne, sans-serif" font-weight="800" font-size="20" fill="#f0f0f5">competition,</text>
+  <text x="918" y="720" font-family="Instrument Serif, Georgia, serif" font-style="italic" font-size="20" fill="rgba(165,180,252,0.9)">completely.</text>
+  <text x="784" y="768" font-family="Inter, sans-serif" font-size="11" fill="#46465e" letter-spacing="2">     07 — APPLICATION</text>
+
+  <!-- Defs -->
+  <defs>
+    <linearGradient id="bg-grad" x1="265" y1="110" x2="385" y2="230" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="bg-grad2" x1="820" y1="638" x2="900" y2="718" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="ui-grad" x1="836" y1="478" x2="856" y2="498" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="btn-grad" x1="0" y1="0" x2="1" y2="1" gradientTransform="rotate(135)">
+      <stop stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+</svg>

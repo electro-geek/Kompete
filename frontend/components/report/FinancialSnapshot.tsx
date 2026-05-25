@@ -5,70 +5,80 @@ interface FinancialSnapshotProps {
   fundingHistory?: FundingRound[]
 }
 
-const METRIC_CONFIG = [
-  { key: 'revenue' as const, label: 'Revenue', icon: '💵', gradient: 'from-emerald-500/20 to-green-500/10', border: 'border-emerald-500/20', text: 'text-emerald-400' },
-  { key: 'valuation' as const, label: 'Valuation', icon: '📈', gradient: 'from-blue-500/20 to-cyan-500/10', border: 'border-blue-500/20', text: 'text-blue-400' },
-  { key: 'growth' as const, label: 'Growth Rate', icon: '🚀', gradient: 'from-violet-500/20 to-purple-500/10', border: 'border-violet-500/20', text: 'text-violet-400' },
-  { key: 'funding' as const, label: 'Total Funding', icon: '💼', gradient: 'from-amber-500/20 to-yellow-500/10', border: 'border-amber-500/20', text: 'text-amber-400' },
+const METRICS = [
+  { key: 'revenue'   as const, label: 'Revenue',       accent: '#4ade80' },
+  { key: 'valuation' as const, label: 'Valuation',     accent: '#60a5fa' },
+  { key: 'growth'    as const, label: 'Growth Rate',   accent: '#a78bfa' },
+  { key: 'funding'   as const, label: 'Total Funding', accent: '#fbbf24' },
 ]
 
 export default function FinancialSnapshot({ snapshot, fundingHistory }: FinancialSnapshotProps) {
-  const finalSnapshot = snapshot || {} as any
-  const hasHistory = fundingHistory && fundingHistory.length > 0
+  const s = snapshot || {} as any
 
   return (
-    <section className="space-y-6">
+    <section style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       <div>
-        <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-          <span>💰</span>Financial Snapshot
-        </h2>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {METRIC_CONFIG.map((m) => (
+        <h2 className="section-label">Financial Snapshot</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {METRICS.map((m) => (
             <div
               key={m.key}
-              className={`rounded-2xl p-5 bg-gradient-to-br ${m.gradient} border ${m.border} hover:-translate-y-1 transition-transform duration-200`}
+              style={{
+                background: 'var(--surface)', border: '1px solid var(--border)',
+                borderRadius: '12px', padding: '18px 20px',
+                transition: 'border-color 0.15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+              onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
             >
-              <div className="text-2xl mb-3">{m.icon}</div>
-              <div className={`text-xs font-semibold uppercase tracking-wider ${m.text} mb-1`}>{m.label}</div>
-              <div className="text-white font-bold text-lg leading-tight">{finalSnapshot[m.key] || 'N/A'}</div>
+              <p style={{ fontSize: '11px', fontWeight: '600', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--fg-subtle)', margin: '0 0 10px' }}>
+                {m.label}
+              </p>
+              <p className="mono" style={{ fontSize: '18px', fontWeight: '600', color: m.accent, margin: 0, lineHeight: 1.2 }}>
+                {s[m.key] || 'N/A'}
+              </p>
             </div>
           ))}
         </div>
       </div>
 
-      {hasHistory && (
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <span>🤝</span>Funding Rounds & Lead Investors
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {fundingHistory && fundingHistory.length > 0 && (
+        <div>
+          <h2 className="section-label">Funding Rounds</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {fundingHistory.map((round, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl p-5 bg-slate-900/40 border border-slate-800 hover:border-brand-500/30 transition-all duration-300 relative overflow-hidden group"
+                style={{
+                  background: 'var(--surface)', border: '1px solid var(--border)',
+                  borderRadius: '12px', padding: '18px 20px',
+                  transition: 'border-color 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent-border)')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
               >
-                <div className="absolute top-0 right-0 w-24 h-24 bg-brand-500/5 rounded-bl-full pointer-events-none group-hover:bg-brand-500/10 transition-colors" />
-                <div className="flex items-start justify-between mb-3">
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '14px' }}>
                   <div>
-                    <span className="inline-block px-2.5 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-semibold uppercase tracking-wider mb-2">
+                    <span className="badge badge-accent" style={{ marginBottom: '8px', display: 'inline-flex' }}>
                       {round.round}
                     </span>
-                    <h4 className="text-white font-bold text-xl leading-none">{round.amount}</h4>
+                    <p className="mono" style={{ fontSize: '22px', fontWeight: '600', color: 'var(--fg)', margin: 0, lineHeight: 1 }}>
+                      {round.amount}
+                    </p>
                   </div>
-                  <span className="text-slate-400 text-xs font-medium bg-slate-800/40 px-2.5 py-1 rounded-md border border-slate-700/50">
+                  <span className="mono" style={{ fontSize: '12px', color: 'var(--fg-subtle)', flexShrink: 0 }}>
                     {round.date}
                   </span>
                 </div>
-                
-                <div className="space-y-2 mt-4 border-t border-slate-800/60 pt-3">
-                  <div className="text-xs">
-                    <span className="text-slate-500 font-medium block">Key Investors:</span>
-                    <span className="text-white font-semibold text-sm block mt-0.5">{round.investors || 'N/A'}</span>
+                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '14px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div>
+                    <p style={{ fontSize: '11px', color: 'var(--fg-subtle)', margin: '0 0 3px', fontWeight: '500' }}>Key Investors</p>
+                    <p style={{ fontSize: '13px', color: 'var(--fg)', margin: 0, fontWeight: '500' }}>{round.investors || 'N/A'}</p>
                   </div>
                   {round.details && (
-                    <div className="text-xs">
-                      <span className="text-slate-500 font-medium block">Strategic Purpose:</span>
-                      <p className="text-slate-300 mt-1 leading-relaxed">{round.details}</p>
+                    <div>
+                      <p style={{ fontSize: '11px', color: 'var(--fg-subtle)', margin: '0 0 3px', fontWeight: '500' }}>Strategic Purpose</p>
+                      <p style={{ fontSize: '13px', color: 'var(--fg-dim)', margin: 0, lineHeight: '1.6' }}>{round.details}</p>
                     </div>
                   )}
                 </div>
@@ -80,4 +90,3 @@ export default function FinancialSnapshot({ snapshot, fundingHistory }: Financia
     </section>
   )
 }
-

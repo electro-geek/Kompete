@@ -5,55 +5,57 @@ import { useRouter } from 'next/navigation'
 import { startResearch, fetchUserReports, getPdfDownloadUrl, saveUserApiKey } from '@/lib/api'
 import SearchBar from '@/components/SearchBar'
 import Header from '@/components/Header'
+import { Logo, LogoMark } from '@/components/Logo'
 import { useAuth } from '@/context/AuthContext'
 import Link from 'next/link'
-import Spinner from '@/components/ui/Spinner'
 
 const DEMO_COMPANIES = ['Notion', 'Linear', 'Figma', 'Vercel', 'Stripe', 'Airtable']
+
+const FEATURES = [
+  { num: '01', label: 'Multi-Agent Research', desc: 'Four specialized agents scan news, financials, reviews, and social signals simultaneously.' },
+  { num: '02', label: 'SWOT Synthesis',       desc: 'A fifth agent combines all findings into a structured, evidence-backed competitive report.' },
+  { num: '03', label: 'Under 60 Seconds',     desc: 'Parallel async execution cuts hours of manual research into less than a minute.' },
+  { num: '04', label: 'PDF Export',           desc: 'One-click download of a polished, print-ready report for presentations.' },
+]
+
+/* ── Inline layout constants ─────────────────────────────────────────────── */
+const CONTAINER = { maxWidth: '660px', margin: '0 auto', padding: '0 24px' }
+const WIDE      = { maxWidth: '980px', margin: '0 auto', padding: '0 24px' }
+const DIVIDER   = { height: '1px', background: 'linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent)', maxWidth: '980px', margin: '0 auto' }
 
 export default function HomePage() {
   const router = useRouter()
   const { user } = useAuth()
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  
-  // User history state
-  const [history, setHistory] = useState<any[]>([])
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState<string | null>(null)
+  const [history, setHistory]   = useState<any[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
-
-  // API Key state
   const [showApiKeyPrompt, setShowApiKeyPrompt] = useState(false)
-  const [apiKey, setApiKey] = useState('')
+  const [apiKey, setApiKey]     = useState('')
   const [savingApiKey, setSavingApiKey] = useState(false)
   const [pendingCompany, setPendingCompany] = useState('')
   const [promptReason, setPromptReason] = useState<'free_limit' | 'quota'>('free_limit')
+  const [keyFocused, setKeyFocused] = useState(false)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search)
-      if (urlParams.get('quota') === 'true') {
-        setPendingCompany(urlParams.get('company') || '')
+      const p = new URLSearchParams(window.location.search)
+      if (p.get('quota') === 'true') {
+        setPendingCompany(p.get('company') || '')
         setPromptReason('quota')
         setShowApiKeyPrompt(true)
-        window.history.replaceState({}, '', '/') // clean up url
+        window.history.replaceState({}, '', '/')
       }
     }
   }, [])
 
-  // Fetch history when user logins
   useEffect(() => {
     if (user?.token) {
       setHistoryLoading(true)
       fetchUserReports(user.token)
-        .then((data) => {
-          setHistory(data)
-        })
-        .catch((err) => {
-          console.error('Failed to load user reports history:', err)
-        })
-        .finally(() => {
-          setHistoryLoading(false)
-        })
+        .then(setHistory)
+        .catch(() => {})
+        .finally(() => setHistoryLoading(false))
     } else {
       setHistory([])
     }
@@ -63,19 +65,16 @@ export default function HomePage() {
     if (!company.trim()) return
     setLoading(true)
     setError(null)
-
     try {
       await startResearch(company.trim(), user?.token)
       router.push(`/research/${encodeURIComponent(company.trim().toLowerCase())}`)
     } catch (err: any) {
-      if (err.message === 'free_limit_reached' || err.message === 'You must be logged in to analyze a company.') {
-        if (err.message === 'free_limit_reached') {
-          setPendingCompany(company.trim())
-          setPromptReason('free_limit')
-          setShowApiKeyPrompt(true)
-        } else {
-          setError(err.message)
-        }
+      if (err.message === 'free_limit_reached') {
+        setPendingCompany(company.trim())
+        setPromptReason('free_limit')
+        setShowApiKeyPrompt(true)
+      } else if (err.message === 'You must be logged in to analyze a company.') {
+        setError(err.message)
       } else {
         setError(err.message || 'Failed to start research')
       }
@@ -90,10 +89,7 @@ export default function HomePage() {
     try {
       await saveUserApiKey(apiKey.trim(), user?.token)
       setShowApiKeyPrompt(false)
-      // Resume research
-      if (pendingCompany) {
-        handleSearch(pendingCompany)
-      }
+      if (pendingCompany) handleSearch(pendingCompany)
     } catch (err: any) {
       setError(err.message || 'Failed to save API key')
       setSavingApiKey(false)
@@ -103,237 +99,364 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <main className="relative min-h-screen flex flex-col items-center justify-start overflow-hidden px-4 pt-28 pb-16">
-        {/* Background gradient orbs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -left-40 w-96 h-96 bg-brand-600/20 rounded-full blur-3xl animate-pulse-slow" />
-          <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-3xl" />
-          {/* Grid */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:60px_60px] opacity-30" />
-        </div>
+      <main style={{ minHeight: '100vh', paddingTop: '58px' }}>
 
-        <div className="relative z-10 w-full max-w-3xl mx-auto text-center animate-fade-in mt-8">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 text-brand-300 text-sm font-medium mb-8">
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            Powered by Gemini 2.5 Flash · Google Search
-          </div>
+        {/* ── Hero ──────────────────────────────────────────────────────── */}
+        <div style={{
+          position: 'relative',
+          overflow: 'hidden',
+          backgroundImage: [
+            'radial-gradient(ellipse 85% 55% at 50% -5%, rgba(99,102,241,0.16) 0%, transparent 65%)',
+            'radial-gradient(circle, rgba(99,102,241,0.08) 1px, transparent 1px)',
+          ].join(', '),
+          backgroundSize: 'auto, 28px 28px',
+        }}>
+          <div style={{ ...CONTAINER, paddingTop: '96px', paddingBottom: '88px', textAlign: 'center' }}>
 
-          {/* Headline */}
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
-            <span className="text-white">Competitor intel,</span>
-            <br />
-            <span className="gradient-text">boardroom-ready.</span>
-          </h1>
+            <h1
+              className="heading animate-fade-up"
+              style={{
+                fontSize: 'clamp(38px, 6vw, 66px)',
+                fontWeight: 800,
+                lineHeight: 1.04,
+                letterSpacing: '-0.04em',
+                color: 'var(--fg)',
+                marginBottom: '22px',
+                animationFillMode: 'both',
+              }}
+            >
+              Know your competition,{' '}
+              <span className="display italic text-gradient">completely.</span>
+            </h1>
 
-          <p className="text-slate-400 text-lg sm:text-xl mb-12 max-w-2xl mx-auto leading-relaxed">
-            Type any company name. Four AI agents browse the web in parallel — news, financials, reviews, social — and synthesise it into a SWOT report in under 60 seconds.
-          </p>
+            <p
+              className="animate-fade-up"
+              style={{
+                fontSize: '17px', lineHeight: 1.72,
+                color: 'var(--fg-dim)', marginBottom: '44px',
+                animationDelay: '60ms', animationFillMode: 'both',
+              }}
+            >
+              Type a company name. Four AI agents browse news, financials, reviews, and social signals — then synthesize a full SWOT in under 60 seconds.
+            </p>
 
-          {/* Search */}
-          {!showApiKeyPrompt ? (
-            <SearchBar onSearch={handleSearch} loading={loading} />
-          ) : (
-            <div className="flex flex-col items-center animate-fade-in gap-4 w-full max-w-xl mx-auto">
-              <p className="text-slate-300 text-sm mb-2">
-                {promptReason === 'quota'
-                  ? "Our backend API quota is temporarily exceeded. Please provide your own Google Gemini API key to continue."
-                  : "You've used your one free analysis. To continue researching companies, please enter your own Google Gemini API key."}
-                <br/>
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-brand-400 hover:text-brand-300 underline mt-1 block">
-                  Get your free API key from Google AI Studio
-                </a>
-              </p>
-              <input
-                type="password"
-                placeholder="Paste your Gemini API key here..."
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                className="w-full px-5 py-4 rounded-2xl bg-slate-800/80 border border-slate-700/60 text-white placeholder-slate-500 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/50 transition-all duration-200"
-              />
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setShowApiKeyPrompt(false)}
-                  className="px-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-medium transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleSaveApiKey}
-                  disabled={savingApiKey || !apiKey.trim()}
-                  className="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-medium transition-colors disabled:opacity-50"
-                >
-                  {savingApiKey ? 'Saving...' : 'Save & Continue'}
-                </button>
-              </div>
+            {/* Search / API key prompt */}
+            <div className="animate-fade-up" style={{ animationDelay: '120ms', animationFillMode: 'both' }}>
+              {!showApiKeyPrompt ? (
+                <SearchBar onSearch={handleSearch} loading={loading} />
+              ) : (
+                <div className="animate-fade-in" style={{
+                  background: 'var(--surface)', border: '1px solid var(--border)',
+                  borderRadius: '18px', padding: '26px', textAlign: 'left',
+                  maxWidth: '480px', margin: '0 auto',
+                  boxShadow: '0 8px 40px rgba(0,0,0,0.45)',
+                }}>
+                  <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--fg)', margin: '0 0 7px' }}>
+                    {promptReason === 'quota' ? 'API quota temporarily exceeded' : 'Free analysis limit reached'}
+                  </h3>
+                  <p style={{ fontSize: '13px', color: 'var(--fg-dim)', margin: '0 0 18px', lineHeight: 1.65 }}>
+                    {promptReason === 'quota'
+                      ? 'Our shared quota is exhausted. Add your own Gemini API key to continue.'
+                      : "You've used your free analysis. Add a Gemini API key to continue."}
+                    {' '}
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer"
+                      style={{ color: 'var(--accent-light)', textDecoration: 'none', fontWeight: 500 }}>
+                      Get a free key →
+                    </a>
+                  </p>
+                  <input
+                    type="password"
+                    placeholder="Paste your Gemini API key (AIza…)"
+                    value={apiKey}
+                    onChange={e => setApiKey(e.target.value)}
+                    onFocus={() => setKeyFocused(true)}
+                    onBlur={() => setKeyFocused(false)}
+                    onKeyDown={e => { if (e.key === 'Enter') handleSaveApiKey() }}
+                    style={{
+                      width: '100%', padding: '11px 14px',
+                      background: 'var(--elevated)',
+                      border: `1px solid ${keyFocused ? 'var(--accent)' : 'var(--border)'}`,
+                      borderRadius: '12px', color: 'var(--fg)', fontSize: '14px',
+                      outline: 'none', marginBottom: '12px',
+                      boxShadow: keyFocused ? '0 0 0 3px rgba(99,102,241,0.15)' : 'none',
+                      transition: 'border-color 0.2s, box-shadow 0.2s',
+                    }}
+                  />
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => setShowApiKeyPrompt(false)} style={{
+                      padding: '9px 18px', borderRadius: '10px',
+                      background: 'var(--elevated)', border: '1px solid var(--border)',
+                      color: 'var(--fg-dim)', fontSize: '13px', cursor: 'pointer', fontWeight: 500,
+                    }}>
+                      Cancel
+                    </button>
+                    <button onClick={handleSaveApiKey} disabled={savingApiKey || !apiKey.trim()} style={{
+                      padding: '9px 18px', borderRadius: '10px',
+                      background: 'linear-gradient(135deg, #6366f1, #7c3aed)',
+                      border: 'none', color: 'white', fontSize: '13px', fontWeight: 600,
+                      cursor: savingApiKey || !apiKey.trim() ? 'not-allowed' : 'pointer',
+                      opacity: savingApiKey || !apiKey.trim() ? 0.5 : 1,
+                      boxShadow: '0 2px 12px rgba(99,102,241,0.3)',
+                    }}>
+                      {savingApiKey ? 'Saving…' : 'Save & continue'}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
 
-          {/* Error */}
-          {error && (
-            <div className="mt-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-              {error}
-            </div>
-          )}
-
-          {/* Demo chips */}
-          <div className="mt-8 flex flex-wrap justify-center gap-2">
-            <span className="text-slate-500 text-sm mr-1 self-center">Try:</span>
-            {DEMO_COMPANIES.map((c) => (
-              <button
-                key={c}
-                onClick={() => handleSearch(c)}
-                disabled={loading}
-                className="px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/60 text-slate-400 text-sm hover:border-brand-500/50 hover:text-brand-300 hover:bg-brand-500/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Optional Personalized Report History Dashboard ────────────────────── */}
-        {user && (
-          <div className="relative z-10 w-full max-w-4xl mx-auto mt-20 px-4 animate-slide-up">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                  <span>📚</span>My Research Library
-                </h2>
-                <p className="text-slate-500 text-xs mt-1">
-                  Access your previously generated competitive intelligence dossiers.
-                </p>
-              </div>
-              <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-brand-500/10 text-brand-400 border border-brand-500/20">
-                {history.length} Saved {history.length === 1 ? 'Report' : 'Reports'}
-              </span>
-            </div>
-
-            {historyLoading ? (
-              <div className="flex flex-col items-center justify-center p-12 glass rounded-2xl border border-slate-800/60 space-y-3">
-                <Spinner size="lg" />
-                <span className="text-slate-500 text-xs">Loading dossiers...</span>
-              </div>
-            ) : history.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {history.map((item) => {
-                  const companyName = item.company.charAt(0).toUpperCase() + item.company.slice(1);
-                  const sentiment = item.report?.sentiment_score ?? 5;
-                  const dateStr = new Date(item.created_at).toLocaleDateString(undefined, {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric'
-                  });
-
-                  return (
-                    <div 
-                      key={item.company}
-                      className="glass rounded-2xl border border-slate-800/60 hover:border-brand-500/30 p-5 flex flex-col justify-between hover:-translate-y-0.5 transition-all duration-200"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-3">
-                          <h3 className="text-lg font-bold text-white group-hover:text-brand-300">
-                            {companyName}
-                          </h3>
-                          <span className="text-[10px] text-slate-500 font-mono">
-                            {dateStr}
-                          </span>
-                        </div>
-
-                        {/* Sentiment and SWOT snippet */}
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="flex items-center gap-1">
-                            <span className="text-slate-400 text-xs">Sentiment:</span>
-                            <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
-                              sentiment >= 7 ? 'bg-green-500/10 text-green-400' :
-                              sentiment <= 4 ? 'bg-red-500/10 text-red-400' :
-                              'bg-amber-500/10 text-amber-400'
-                            }`}>
-                              {sentiment}/10
-                            </span>
-                          </div>
-                        </div>
-
-                        {item.report?.executive_summary && (
-                          <p className="text-slate-400 text-xs leading-relaxed line-clamp-2 mb-4">
-                            {item.report.executive_summary}
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center gap-2 pt-2 border-t border-slate-800/60 mt-auto">
-                        <Link
-                          href={`/report/${encodeURIComponent(item.company)}`}
-                          className="flex-1 text-center py-2 rounded-xl bg-brand-500/10 hover:bg-brand-500/20 text-brand-300 font-semibold text-xs border border-brand-500/20 transition-colors duration-150"
-                        >
-                          View Report
-                        </Link>
-                        <a
-                          href={getPdfDownloadUrl(item.company, user.token)}
-                          download
-                          className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors duration-150 flex items-center justify-center border border-slate-700/60"
-                          title="Download PDF"
-                        >
-                          📥
-                        </a>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <div className="text-center p-12 glass rounded-2xl border border-slate-800/60 flex flex-col items-center justify-center">
-                <span className="text-3xl mb-3">📁</span>
-                <h4 className="text-sm font-semibold text-slate-300">Your library is currently empty</h4>
-                <p className="text-slate-500 text-xs max-w-xs mx-auto mt-1 leading-relaxed">
-                  Start your first competitor research above to auto-save and build your personal intelligence dashboard library.
-                </p>
+            {/* Error */}
+            {error && (
+              <div className="animate-fade-in" style={{
+                maxWidth: '480px', margin: '14px auto 0',
+                background: 'var(--red-bg)', border: '1px solid var(--red-border)',
+                borderRadius: '12px', padding: '11px 16px',
+                fontSize: '13px', color: '#fca5a5', textAlign: 'left', lineHeight: 1.55,
+              }}>
+                {error}
               </div>
             )}
+
+            {/* Demo chips */}
+            <div style={{ marginTop: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: '6px' }}>
+              <span style={{ fontSize: '12px', color: 'var(--fg-subtle)', marginRight: '2px' }}>Try:</span>
+              {DEMO_COMPANIES.map(c => (
+                <button
+                  key={c}
+                  onClick={() => handleSearch(c)}
+                  disabled={loading}
+                  className="badge badge-default"
+                  style={{ cursor: loading ? 'not-allowed' : 'pointer', fontSize: '12px', padding: '4px 12px', fontWeight: 500, transition: 'all 0.18s' }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = 'var(--accent-bg)';
+                    e.currentTarget.style.borderColor = 'var(--accent-border)';
+                    e.currentTarget.style.color = 'var(--accent-light)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = 'var(--elevated)';
+                    e.currentTarget.style.borderColor = 'var(--border)';
+                    e.currentTarget.style.color = 'var(--fg-dim)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+
+          </div>{/* /CONTAINER */}
+        </div>{/* /hero wrapper */}
+
+        {/* ── Divider ───────────────────────────────────────────────────── */}
+        <div style={DIVIDER} />
+
+        {/* ── Features ──────────────────────────────────────────────────── */}
+        <section style={{ paddingTop: '72px', paddingBottom: '72px' }}>
+          <div style={WIDE}>
+            <p className="section-label animate-fade-up" style={{ textAlign: 'center', marginBottom: '40px', animationFillMode: 'both' }}>
+              How it works
+            </p>
+
+            {/* Inline CSS grid — no Tailwind */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+              gap: '16px',
+            }}>
+              {FEATURES.map((f, i) => (
+                <div
+                  key={f.num}
+                  className="animate-fade-up"
+                  style={{
+                    background: 'var(--surface)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '16px',
+                    padding: '24px',
+                    animationDelay: `${i * 70}ms`,
+                    animationFillMode: 'both',
+                    transition: 'border-color 0.2s, transform 0.2s, box-shadow 0.2s',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'var(--accent-border)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.5)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'var(--border)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  <div className="mono" style={{
+                    fontSize: '28px', fontWeight: 800, lineHeight: 1,
+                    color: 'var(--accent)', opacity: 0.32,
+                    letterSpacing: '-0.05em', marginBottom: '18px',
+                  }}>
+                    {f.num}
+                  </div>
+                  <h3 style={{ fontSize: '13.5px', fontWeight: 600, color: 'var(--fg)', marginBottom: '8px', lineHeight: 1.4 }}>
+                    {f.label}
+                  </h3>
+                  <p style={{ fontSize: '12.5px', color: 'var(--fg-dim)', lineHeight: 1.65, margin: 0 }}>
+                    {f.desc}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
+        </section>
+
+        {/* ── Research History ──────────────────────────────────────────── */}
+        {user && (
+          <>
+            <div style={DIVIDER} />
+            <section style={{ paddingTop: '72px', paddingBottom: '80px' }}>
+              <div style={WIDE} className="animate-fade-up">
+                <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '32px' }}>
+                  <div>
+                    <p className="section-label" style={{ marginBottom: '7px' }}>Research History</p>
+                    <h2 className="heading" style={{ fontSize: '22px', fontWeight: 700, color: 'var(--fg)', margin: 0, lineHeight: 1.25, letterSpacing: '-0.03em' }}>
+                      Your saved reports
+                    </h2>
+                  </div>
+                  <span className="badge badge-accent" style={{ padding: '4px 12px' }}>
+                    {history.length} {history.length === 1 ? 'report' : 'reports'}
+                  </span>
+                </div>
+
+                {historyLoading ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+                    {[1, 2].map(i => (
+                      <div key={i} className="skeleton" style={{ height: '160px', borderRadius: '16px' }} />
+                    ))}
+                  </div>
+                ) : history.length > 0 ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+                    {history.map(item => {
+                      const name  = item.company.charAt(0).toUpperCase() + item.company.slice(1)
+                      const score = item.report?.sentiment_score ?? 5
+                      const cls   = score >= 7 ? 'badge-green' : score <= 4 ? 'badge-red' : 'badge-amber'
+                      const date  = new Date(item.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+
+                      return (
+                        <div
+                          key={item.company}
+                          style={{
+                            background: 'var(--surface)', border: '1px solid var(--border)',
+                            borderRadius: '16px', padding: '20px',
+                            display: 'flex', flexDirection: 'column', gap: '14px',
+                            transition: 'border-color 0.2s, transform 0.2s, box-shadow 0.2s',
+                          }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.borderColor = 'var(--accent-border)';
+                            e.currentTarget.style.transform = 'translateY(-1px)';
+                            e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.45)';
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.borderColor = 'var(--border)';
+                            e.currentTarget.style.transform = 'translateY(0)';
+                            e.currentTarget.style.boxShadow = 'none';
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                            {/* Company avatar */}
+                            <div style={{
+                              width: '38px', height: '38px', borderRadius: '10px', flexShrink: 0,
+                              background: 'linear-gradient(135deg, rgba(99,102,241,0.18), rgba(124,58,237,0.14))',
+                              border: '1px solid var(--accent-border)',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              fontSize: '15px', fontWeight: 700, color: 'var(--accent-light)',
+                            }}>
+                              {name[0]}
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '8px' }}>
+                                <h3 className="heading" style={{ fontSize: '15px', fontWeight: 700, color: 'var(--fg)', margin: 0, letterSpacing: '-0.02em' }}>
+                                  {name}
+                                </h3>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexShrink: 0 }}>
+                                  <span className={`badge ${cls}`}>{score}/10</span>
+                                  <span className="mono" style={{ fontSize: '11px', color: 'var(--fg-subtle)' }}>{date}</span>
+                                </div>
+                              </div>
+                              {item.report?.executive_summary && (
+                                <p className="line-clamp-2" style={{ fontSize: '12.5px', color: 'var(--fg-dim)', lineHeight: 1.6, margin: 0 }}>
+                                  {item.report.executive_summary}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', gap: '8px', paddingTop: '14px', borderTop: '1px solid var(--border)' }}>
+                            <Link
+                              href={`/report/${encodeURIComponent(item.company)}`}
+                              style={{
+                                fontSize: '12.5px', fontWeight: 600, padding: '7px 16px',
+                                borderRadius: '10px', textDecoration: 'none',
+                                background: 'linear-gradient(135deg, rgba(99,102,241,0.16), rgba(124,58,237,0.11))',
+                                border: '1px solid var(--accent-border)',
+                                color: 'var(--accent-light)', transition: 'all 0.15s',
+                              }}
+                            >
+                              View report →
+                            </Link>
+                            <a
+                              href={getPdfDownloadUrl(item.company, user.token)}
+                              download title="Download PDF"
+                              style={{
+                                fontSize: '12.5px', padding: '7px 14px', borderRadius: '10px',
+                                textDecoration: 'none', background: 'var(--elevated)',
+                                border: '1px solid var(--border)', color: 'var(--fg-dim)', fontWeight: 500,
+                                transition: 'all 0.15s',
+                              }}
+                            >
+                              PDF ↓
+                            </a>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div style={{
+                    background: 'var(--surface)', border: '1px solid var(--border)',
+                    borderRadius: '16px', padding: '64px 24px', textAlign: 'center',
+                  }}>
+                    <div style={{
+                      width: '48px', height: '48px', borderRadius: '14px',
+                      background: 'var(--elevated)', border: '1px solid var(--border)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px',
+                    }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ color: 'var(--fg-subtle)' }}>
+                        <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.8" />
+                        <path d="m21 21-4.35-4.35" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                    <p style={{ fontSize: '14.5px', fontWeight: 600, color: 'var(--fg)', margin: '0 0 6px' }}>No reports yet</p>
+                    <p style={{ fontSize: '13px', color: 'var(--fg-dim)', margin: 0 }}>Start your first competitive research above.</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          </>
         )}
 
-        {/* Feature cards */}
-        <div className="relative z-10 w-full max-w-4xl mx-auto mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 px-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-          {FEATURES.map((f) => (
-            <div key={f.title} className="glass rounded-xl p-5 border border-slate-800/60 hover:border-brand-500/30 transition-all duration-300 hover:-translate-y-1">
-              <div className="text-2xl mb-3">{f.icon}</div>
-              <h3 className="font-semibold text-white text-sm mb-1">{f.title}</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">{f.desc}</p>
-            </div>
-          ))}
-        </div>
+        {/* ── Footer ────────────────────────────────────────────────────── */}
+        <div style={DIVIDER} />
+        <footer style={{ padding: '32px 24px', textAlign: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
+            <LogoMark size={18} />
+            <span className="heading" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--fg-subtle)', letterSpacing: '-0.3px' }}>
+              Kompete
+            </span>
+          </div>
+          <p style={{ fontSize: '11.5px', color: 'var(--fg-subtle)', margin: 0, opacity: 0.65 }}>
+            Built for Milan AI Week · AI Agent Olympics Hackathon 2026
+          </p>
+        </footer>
 
-        {/* Bottom tagline */}
-        <p className="relative z-10 mt-16 text-slate-600 text-xs text-center">
-          Built for Milan AI Week · AI Agent Olympics Hackathon 2026
-        </p>
       </main>
     </>
   )
 }
-
-const FEATURES = [
-  {
-    icon: '🔎',
-    title: '4 Parallel Agents',
-    desc: 'News, financials, reviews, and social signals agents run simultaneously.',
-  },
-  {
-    icon: '⚡',
-    title: 'Under 60 Seconds',
-    desc: 'Parallel asyncio execution cuts research time from 2 min to under 1 min.',
-  },
-  {
-    icon: '📊',
-    title: 'SWOT Analysis',
-    desc: 'Evidence-backed strengths, weaknesses, opportunities, and threats.',
-  },
-  {
-    icon: '📄',
-    title: 'PDF Export',
-    desc: 'One-click download of a polished, print-ready boardroom report.',
-  },
-]

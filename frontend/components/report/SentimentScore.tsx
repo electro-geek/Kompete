@@ -1,65 +1,51 @@
-interface SentimentScoreProps {
-  score: number
-}
+interface SentimentScoreProps { score: number }
 
-function getScoreColor(score: number): string {
-  if (score >= 8) return 'text-green-400'
-  if (score >= 6) return 'text-yellow-400'
-  if (score >= 4) return 'text-orange-400'
-  return 'text-red-400'
-}
-
-function getBarColor(score: number): string {
-  if (score >= 8) return 'from-green-500 to-emerald-400'
-  if (score >= 6) return 'from-yellow-500 to-amber-400'
-  if (score >= 4) return 'from-orange-500 to-amber-400'
-  return 'from-red-500 to-rose-400'
-}
-
-function getLabel(score: number): string {
-  if (score >= 9) return 'Exceptional'
-  if (score >= 8) return 'Very Positive'
-  if (score >= 7) return 'Positive'
-  if (score >= 6) return 'Mostly Positive'
-  if (score >= 5) return 'Mixed'
-  if (score >= 4) return 'Mostly Negative'
-  return 'Negative'
+function meta(score: number) {
+  if (score >= 9) return { label: 'Exceptional',     color: '#4ade80', bar: '#22c55e' }
+  if (score >= 8) return { label: 'Very Positive',   color: '#4ade80', bar: '#22c55e' }
+  if (score >= 7) return { label: 'Positive',        color: '#86efac', bar: '#4ade80' }
+  if (score >= 6) return { label: 'Mostly Positive', color: '#fbbf24', bar: '#f59e0b' }
+  if (score >= 5) return { label: 'Mixed',           color: '#fbbf24', bar: '#f59e0b' }
+  if (score >= 4) return { label: 'Mostly Negative', color: '#fb923c', bar: '#f97316' }
+  return           { label: 'Negative',              color: '#f87171', bar: '#ef4444' }
 }
 
 export default function SentimentScore({ score }: SentimentScoreProps) {
-  const safeScore = typeof score === 'number' ? score : 5
-  const percentage = (safeScore / 10) * 100
-  const colorClass = getScoreColor(safeScore)
-  const barGradient = getBarColor(safeScore)
-  const label = getLabel(safeScore)
+  const s   = typeof score === 'number' ? Math.min(10, Math.max(0, score)) : 5
+  const pct = (s / 10) * 100
+  const m   = meta(s)
 
   return (
     <section>
-      <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-        <span>⭐</span>Customer Sentiment Score
-      </h2>
-      <div className="glass rounded-2xl p-6 border border-slate-800/60">
-        <div className="flex items-center gap-6 mb-4">
-          <div className={`text-6xl font-extrabold ${colorClass} tabular-nums`}>
-            {safeScore}
-            <span className="text-2xl text-slate-600 font-normal">/10</span>
-          </div>
+      <h2 className="section-label">Customer Sentiment</h2>
+      <div style={{
+        background: 'var(--surface)', border: '1px solid var(--border)',
+        borderRadius: '14px', padding: '24px 28px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '20px' }}>
+          <span className="mono" style={{ fontSize: '52px', fontWeight: '700', color: m.color, lineHeight: 1, letterSpacing: '-2px' }}>
+            {s}
+            <span style={{ fontSize: '22px', color: 'var(--fg-subtle)', fontWeight: '400', letterSpacing: 0 }}>/10</span>
+          </span>
           <div>
-            <div className={`text-lg font-bold ${colorClass}`}>{label}</div>
-            <div className="text-slate-500 text-sm">Based on G2, Trustpilot, Glassdoor & Reddit</div>
+            <p style={{ fontSize: '16px', fontWeight: '600', color: m.color, margin: '0 0 4px' }}>{m.label}</p>
+            <p style={{ fontSize: '12px', color: 'var(--fg-subtle)', margin: 0 }}>
+              Based on G2, Trustpilot, Glassdoor & Reddit
+            </p>
           </div>
         </div>
 
         {/* Bar */}
-        <div className="h-3 bg-slate-800 rounded-full overflow-hidden">
-          <div
-            className={`h-full rounded-full bg-gradient-to-r ${barGradient} transition-all duration-1000`}
-            style={{ width: `${percentage}%` }}
-          />
+        <div style={{ height: '6px', background: 'var(--elevated)', borderRadius: '6px', overflow: 'hidden' }}>
+          <div style={{
+            height: '100%', width: `${pct}%`,
+            background: m.bar, borderRadius: '6px',
+            transition: 'width 1.2s cubic-bezier(0.4, 0, 0.2, 1)',
+          }} />
         </div>
-        <div className="flex justify-between text-xs text-slate-600 mt-1">
-          <span>0 — Terrible</span>
-          <span>10 — Exceptional</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '6px' }}>
+          <span className="mono" style={{ fontSize: '10px', color: 'var(--fg-subtle)' }}>0 — Poor</span>
+          <span className="mono" style={{ fontSize: '10px', color: 'var(--fg-subtle)' }}>10 — Exceptional</span>
         </div>
       </div>
     </section>

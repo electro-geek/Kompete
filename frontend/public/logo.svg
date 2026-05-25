@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 56" fill="none">
+  <!-- Icon mark -->
+  <rect x="0" y="8" width="40" height="40" rx="10" fill="url(#wm-grad)"/>
+  <path d="M11 15 L11 41" stroke="white" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M11 28 L28 15" stroke="white" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M11 28 L28 41" stroke="white" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="11" cy="28" r="2.8" fill="rgba(199,210,254,0.95)"/>
+  <!-- Wordmark text path data (fallback: geometric approximation of "Kompete") -->
+  <text x="52" y="36"
+    font-family="Syne, system-ui, sans-serif"
+    font-weight="800"
+    font-size="26"
+    fill="#f0f0f5"
+    letter-spacing="-1">Kompete</text>
+  <defs>
+    <linearGradient id="wm-grad" x1="0" y1="8" x2="40" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+</svg>
