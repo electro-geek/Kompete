@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Kompete favicon — K mark in indigo square container -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="6" fill="#6366f1"/>
+  <!-- K mark centered: original 60×72, scaled to fit in 22×26.4, offset to (5, 2.8) -->
+  <g transform="translate(5.0, 2.8) scale(0.367)">
+    <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z" fill="white"/>
+  </g>
+</svg>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80" role="img" aria-label="Kompete">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700;500&amp;display=swap');
+      .wm { font-family: 'Inter', system-ui, sans-serif; }
+    </style>
+  </defs>
+
+  <!-- K Mark — viewBox 60×72, scaled to height 56, offset y=12 -->
+  <g transform="translate(0,12) scale(0.778)">
+    <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z" fill="white"/>
+  </g>
+
+  <!-- Separator -->
+  <line x1="62" y1="18" x2="62" y2="62" stroke="#2a2a3e" stroke-width="1"/>
+
+  <!-- Wordmark -->
+  <text x="74" y="44"
+        class="wm"
+        font-family="'Inter', system-ui, sans-serif"
+        font-weight="800"
+        font-size="26"
+        letter-spacing="4"
+        fill="#f0f0f5">KOMPETE</text>
+
+  <!-- Tagline -->
+  <text x="75" y="59"
+        class="wm"
+        font-family="'Inter', system-ui, sans-serif"
+        font-weight="500"
+        font-size="8.5"
+        letter-spacing="3.2"
+        fill="#6366f1">COMPETITIVE INTELLIGENCE</text>
+</svg>

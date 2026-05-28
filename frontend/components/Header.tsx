@@ -5,11 +5,111 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Logo } from './Logo';
 
+function SignInModal({ onClose, onSignIn }: { onClose: () => void; onSignIn: () => void }) {
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}
+        onClick={onClose}
+      />
+      {/* Modal */}
+      <div style={{
+        position: 'fixed', top: '50%', left: '50%', zIndex: 101,
+        transform: 'translate(-50%, -50%)',
+        width: '100%', maxWidth: '380px', margin: '0 16px',
+        background: 'var(--elevated)', border: '1px solid var(--border)',
+        borderRadius: '20px', padding: '32px 28px',
+        boxShadow: '0 24px 80px rgba(0,0,0,0.7)',
+      }}>
+        {/* Close */}
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          style={{
+            position: 'absolute', top: '16px', right: '16px',
+            background: 'none', border: 'none', cursor: 'pointer',
+            color: 'var(--fg-subtle)', padding: '4px', borderRadius: '6px',
+            lineHeight: 1,
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+        </button>
+
+        {/* Logo area */}
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <div style={{
+            width: '48px', height: '48px', borderRadius: '14px', margin: '0 auto 14px',
+            background: 'linear-gradient(135deg, rgba(99,102,241,0.18), rgba(124,58,237,0.14))',
+            border: '1px solid var(--accent-border)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="var(--accent-light)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <h2 className="heading" style={{ fontSize: '18px', fontWeight: 700, color: 'var(--fg)', margin: '0 0 6px', letterSpacing: '-0.03em' }}>
+            Sign in to Kompete
+          </h2>
+          <p style={{ fontSize: '13px', color: 'var(--fg-dim)', margin: 0, lineHeight: 1.55 }}>
+            Unlock competitive intelligence reports
+          </p>
+        </div>
+
+        {/* Sign in button */}
+        <button
+          onClick={onSignIn}
+          style={{
+            width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+            padding: '11px 20px', borderRadius: '12px',
+            background: 'linear-gradient(135deg, #6366f1, #7c3aed)',
+            border: 'none', color: 'white',
+            fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+            boxShadow: '0 4px 20px rgba(99,102,241,0.4)',
+            transition: 'opacity 0.15s, transform 0.15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.opacity = '0.88'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+          onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)'; }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="white" fillOpacity="0.9" />
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="white" fillOpacity="0.9" />
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="white" fillOpacity="0.9" />
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="white" fillOpacity="0.9" />
+          </svg>
+          Continue with Google
+        </button>
+
+        {/* Consent notice */}
+        <p style={{ fontSize: '11.5px', color: 'var(--fg-subtle)', textAlign: 'center', lineHeight: 1.65, margin: '16px 0 0' }}>
+          By continuing you agree to our{' '}
+          <Link href="/terms" onClick={onClose} style={{ color: 'var(--fg-dim)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+            Terms &amp; Conditions
+          </Link>{' '}
+          and{' '}
+          <Link href="/privacy" onClick={onClose} style={{ color: 'var(--fg-dim)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      </div>
+    </>
+  )
+}
+
 export default function Header() {
   const { user, signInWithGoogle, logout, isDemoMode } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [showSignInModal, setShowSignInModal] = useState(false);
+
+  const handleSignIn = () => {
+    setShowSignInModal(false);
+    signInWithGoogle();
+  };
 
   return (
+    <>
+    {showSignInModal && <SignInModal onClose={() => setShowSignInModal(false)} onSignIn={handleSignIn} />}
     <header style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
       height: '58px',
@@ -113,7 +213,7 @@ export default function Header() {
             </div>
           ) : (
             <button
-              onClick={signInWithGoogle}
+              onClick={() => setShowSignInModal(true)}
               style={{
                 display: 'flex', alignItems: 'center', gap: '7px',
                 padding: '7px 16px', borderRadius: '10px',
@@ -139,5 +239,6 @@ export default function Header() {
         </div>
       </div>
     </header>
+    </>
   );
 }

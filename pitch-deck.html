@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kompete — Pitch Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#07080e;
+  --surface:#0d0f1a;
+  --elevated:#131625;
+  --border:rgba(99,102,241,0.13);
+  --border-b:rgba(99,102,241,0.3);
+  --fg:#eeedf5;
+  --fg-dim:#8485a8;
+  --fg-sub:#3d3e5c;
+  --accent:#6366f1;
+  --accent-l:#818cf8;
+  --amber:#f59e0b;
+  --cyan:#22d3ee;
+  --green:#10b981;
+  --red:#f43f5e;
+  --purple:#a78bfa;
+}
+
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--fg);font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased;}
+
+/* ─── GRID BG ─────────────────────────────────── */
+.grid-bg{
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(99,102,241,0.04) 39px,rgba(99,102,241,0.04) 40px),
+    repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(99,102,241,0.04) 39px,rgba(99,102,241,0.04) 40px);
+}
+
+/* ─── SLIDES ──────────────────────────────────── */
+.deck{position:relative;width:100vw;height:100vh;}
+
+.slide{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:56px 72px;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.55s cubic-bezier(0.4,0,0.2,1);
+}
+.slide.active{opacity:1;pointer-events:auto;}
+
+/* ─── ENTRANCE ANIMS ──────────────────────────── */
+@keyframes fiu{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+
+.slide.active .fi  {animation:fiu 0.65s both;}
+.slide.active .fi1 {animation:fiu 0.65s 0.08s both;}
+.slide.active .fi2 {animation:fiu 0.65s 0.16s both;}
+.slide.active .fi3 {animation:fiu 0.65s 0.24s both;}
+.slide.active .fi4 {animation:fiu 0.65s 0.32s both;}
+.slide.active .fi5 {animation:fiu 0.65s 0.40s both;}
+
+/* ─── NAV ─────────────────────────────────────── */
+.counter{position:fixed;top:24px;right:32px;font-family:'DM Mono',monospace;font-size:11px;color:var(--fg-sub);z-index:200;letter-spacing:.1em;}
+
+.dots{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:200;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--fg-sub);cursor:pointer;transition:all .3s;}
+.dot.on{background:var(--accent-l);transform:scale(1.5);}
+
+.arrows{position:fixed;bottom:20px;right:32px;display:flex;gap:8px;z-index:200;}
+.arrow{width:30px;height:30px;border-radius:8px;background:var(--elevated);border:1px solid var(--border);color:var(--fg-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;}
+.arrow:hover{border-color:var(--border-b);color:var(--fg);}
+
+/* ─── TYPE ────────────────────────────────────── */
+.serif{font-family:'Instrument Serif',serif;font-style:italic;}
+.mono{font-family:'DM Mono',monospace;}
+.label{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-sub);font-family:'DM Mono',monospace;}
+.label-a{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-l);font-family:'DM Mono',monospace;}
+
+/* ─── COMPONENTS ──────────────────────────────── */
+.card{background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:26px;}
+.card-a{background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(124,58,237,.06));border:1px solid var(--border-b);border-radius:16px;padding:26px;}
+
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 11px;border-radius:100px;font-size:11px;font-weight:600;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.28);color:var(--accent-l);}
+.badge-g{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.28);color:#34d399;}
+.badge-y{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.28);color:#fbbf24;}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+
+/* gradient text */
+.tg{background:linear-gradient(135deg,#818cf8,#a78bfa,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.ta{background:linear-gradient(135deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* ─── SHIMMER LINE ────────────────────────────── */
+@keyframes shim{0%{background-position:-200% center;}100%{background-position:200% center;}}
+.shimline{height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);background-size:200% auto;animation:shim 3.5s linear infinite;}
+
+/* ─── FLOAT ───────────────────────────────────── */
+@keyframes fl{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+.fl{animation:fl 4s ease-in-out infinite;}
+.fl2{animation:fl 4s 1.8s ease-in-out infinite;}
+
+/* ─── PULSE DOT ───────────────────────────────── */
+@keyframes pu{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.4);}}
+.pulse{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pu 2s infinite;display:inline-block;margin-right:5px;}
+
+/* ─── SLIDE-SPECIFIC BG ───────────────────────── */
+.s1{background:
+  radial-gradient(ellipse 80% 55% at 50% -8%,rgba(99,102,241,.22) 0%,transparent 70%),
+  radial-gradient(ellipse 35% 35% at 88% 92%,rgba(139,92,246,.1) 0%,transparent 55%),
+  repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(99,102,241,.04) 39px,rgba(99,102,241,.04) 40px),
+  repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(99,102,241,.04) 39px,rgba(99,102,241,.04) 40px),
+  var(--bg);}
+
+.s10{background:
+  radial-gradient(ellipse 55% 45% at 50% 50%,rgba(99,102,241,.14) 0%,transparent 70%),
+  repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(99,102,241,.04) 39px,rgba(99,102,241,.04) 40px),
+  repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(99,102,241,.04) 39px,rgba(99,102,241,.04) 40px),
+  var(--bg);}
+
+/* icon box */
+.icon-box{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+
+/* check item */
+.chk{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--fg);}
+.chk-ok{width:22px;height:22px;border-radius:6px;background:rgba(16,185,129,.14);border:1px solid rgba(16,185,129,.3);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 1 · COVER
+══════════════════════════════════════════════ -->
+<div class="slide s1 active" data-i="0">
+
+  <!-- floating badges -->
+  <div class="fl" style="position:absolute;top:52px;left:60px;" ><div class="badge fi"><span class="pulse"></span>Live demo ready</div></div>
+  <div class="fl2" style="position:absolute;top:52px;right:60px;"><div class="badge badge-y fi">⚡ Powered by Gemini 2.5 Flash</div></div>
+  <div class="shimline" style="position:absolute;bottom:72px;left:60px;right:60px;"></div>
+
+  <div class="fi" style="text-align:center;max-width:800px;">
+
+    <!-- logo mark -->
+    <div style="display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(124,58,237,.1));border:1px solid rgba(99,102,241,.32);margin-bottom:24px;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+        <circle cx="11" cy="11" r="7" stroke="#818cf8" stroke-width="1.8"/>
+        <path d="m18 18 3 3" stroke="#818cf8" stroke-width="1.8" stroke-linecap="round"/>
+        <circle cx="11" cy="11" r="3" fill="rgba(99,102,241,.5)"/>
+      </svg>
+    </div>
+
+    <div class="mono fi1" style="font-size:11px;letter-spacing:.32em;color:var(--accent-l);margin-bottom:18px;">KOMPETE</div>
+
+    <h1 class="serif fi2" style="font-size:clamp(46px,6vw,80px);line-height:1.06;margin-bottom:22px;">
+      Know your competition,<br><span class="tg">completely.</span>
+    </h1>
+
+    <p class="fi3" style="font-size:17px;color:var(--fg-dim);line-height:1.75;max-width:500px;margin:0 auto 40px;">
+      AI agents that turn a company name into a full competitive intelligence report — in under 60 seconds.
+    </p>
+
+    <!-- stat strip -->
+    <div class="fi4" style="display:inline-flex;gap:0;background:var(--elevated);border:1px solid var(--border);border-radius:18px;overflow:hidden;">
+      <div style="padding:20px 32px;text-align:center;border-right:1px solid var(--border);">
+        <div class="mono" style="font-size:26px;font-weight:300;color:var(--fg);">&lt;60s</div>
+        <div class="label" style="margin-top:5px;">per report</div>
+      </div>
+      <div style="padding:20px 32px;text-align:center;border-right:1px solid var(--border);">
+        <div class="mono" style="font-size:26px;font-weight:300;color:var(--fg);">5</div>
+        <div class="label" style="margin-top:5px;">AI agents</div>
+      </div>
+      <div style="padding:20px 32px;text-align:center;">
+        <div class="mono" style="font-size:26px;font-weight:300;color:var(--fg);">∞</div>
+        <div class="label" style="margin-top:5px;">companies</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 2 · PROBLEM
+══════════════════════════════════════════════ -->
+<div class="slide grid-bg" data-i="1">
+  <div style="width:100%;max-width:960px;">
+    <div class="label-a fi" style="margin-bottom:18px;">01 / The Problem</div>
+    <h2 class="serif fi1" style="font-size:clamp(34px,4.5vw,58px);line-height:1.1;margin-bottom:44px;">Competitive research is<br><span class="ta">broken.</span></h2>
+
+    <div class="g2 fi2" style="margin-bottom:18px;">
+      <div class="card" style="border-left:3px solid var(--red);padding:28px 32px;">
+        <div class="mono" style="font-size:46px;font-weight:300;margin-bottom:10px;">8–12h</div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:7px;">Manual research per company</div>
+        <p style="font-size:13px;color:var(--fg-dim);line-height:1.65;">Analysts scour news sites, financial filings, review platforms, and social channels — then manually compile everything into a deck. It's slow, expensive, and instantly outdated.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--amber);padding:28px 32px;">
+        <div class="mono" style="font-size:46px;font-weight:300;margin-bottom:10px;">$50K+</div>
+        <div style="font-size:15px;font-weight:700;margin-bottom:7px;">Annual cost of CI tools</div>
+        <p style="font-size:13px;color:var(--fg-dim);line-height:1.65;">Crayon, Klue, and Battlecard charge thousands per month — and still require human analysts to synthesize. Startups and SMBs are completely priced out.</p>
+      </div>
+    </div>
+
+    <div class="g3 fi3">
+      <div style="padding:18px 20px;background:var(--elevated);border:1px solid var(--border);border-radius:13px;display:flex;gap:12px;align-items:flex-start;">
+        <div class="icon-box" style="background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);">⚡</div>
+        <div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">Always stale</div><p style="font-size:11.5px;color:var(--fg-dim);line-height:1.6;">Markets move in hours. Reports are obsolete before they're distributed.</p></div>
+      </div>
+      <div style="padding:18px 20px;background:var(--elevated);border:1px solid var(--border);border-radius:13px;display:flex;gap:12px;align-items:flex-start;">
+        <div class="icon-box" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);">🔒</div>
+        <div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">Gated by price</div><p style="font-size:11.5px;color:var(--fg-dim);line-height:1.6;">Most teams can't afford enterprise CI tools. Founders do it manually in Google Docs.</p></div>
+      </div>
+      <div style="padding:18px 20px;background:var(--elevated);border:1px solid var(--border);border-radius:13px;display:flex;gap:12px;align-items:flex-start;">
+        <div class="icon-box" style="background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.2);">🗃️</div>
+        <div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">Fragmented signals</div><p style="font-size:11.5px;color:var(--fg-dim);line-height:1.6;">News, financials, reviews, social — no tool unifies all four into one coherent picture.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 3 · SOLUTION
+══════════════════════════════════════════════ -->
+<div class="slide grid-bg" data-i="2">
+  <div style="width:100%;max-width:940px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;">
+
+    <div>
+      <div class="label-a fi" style="margin-bottom:18px;">02 / The Solution</div>
+      <h2 class="serif fi1" style="font-size:clamp(34px,4vw,54px);line-height:1.12;margin-bottom:18px;">One search.<br><span class="tg">Full picture.</span></h2>
+      <p class="fi2" style="font-size:14.5px;color:var(--fg-dim);line-height:1.78;margin-bottom:28px;">Type a company name. Kompete deploys five specialized Gemini AI agents that browse the live web — news, financials, customer reviews, social sentiment — then synthesize a structured SWOT report, streamed to your browser in real time.</p>
+      <div class="fi3" style="display:flex;flex-direction:column;gap:11px;">
+        <div class="chk"><div class="chk-ok">✓</div>Live search grounding — not training-data snapshots</div>
+        <div class="chk"><div class="chk-ok">✓</div>Full SWOT + strategic recommendations</div>
+        <div class="chk"><div class="chk-ok">✓</div>Real-time SSE streaming as results arrive</div>
+        <div class="chk"><div class="chk-ok">✓</div>One-click PDF export for presentations</div>
+      </div>
+    </div>
+
+    <!-- mock report card -->
+    <div class="fi4" style="background:var(--elevated);border:1px solid var(--border-b);border-radius:20px;padding:22px;box-shadow:0 0 60px rgba(99,102,241,.12);">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+        <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,rgba(99,102,241,.22),rgba(124,58,237,.1));border:1px solid var(--border-b);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent-l);">S</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;letter-spacing:-.02em;">Stripe</div>
+          <div class="mono" style="font-size:9.5px;color:var(--fg-sub);">Sentiment 8.4/10 · just now</div>
+        </div>
+        <div class="badge badge-g" style="font-size:10px;"><span class="pulse"></span>Live</div>
+      </div>
+      <p style="font-size:11.5px;color:var(--fg-dim);line-height:1.65;margin-bottom:14px;">Stripe remains the dominant force in developer-first payments, commanding ~30% of the US market. Recent expansion into financial services positions it for sustained enterprise growth despite increasing competition.</p>
+      <div class="g2" style="gap:8px;margin-bottom:14px;">
+        <div style="padding:11px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:10px;">
+          <div style="font-size:9.5px;font-weight:700;color:#34d399;margin-bottom:4px;letter-spacing:.06em;">STRENGTHS</div>
+          <div style="font-size:10.5px;color:var(--fg-dim);line-height:1.55;">Developer ecosystem · Brand trust · Global reach</div>
+        </div>
+        <div style="padding:11px;background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);border-radius:10px;">
+          <div style="font-size:9.5px;font-weight:700;color:#fb7185;margin-bottom:4px;letter-spacing:.06em;">THREATS</div>
+          <div style="font-size:10.5px;color:var(--fg-dim);line-height:1.55;">Adyen enterprise push · Fee compression · Regulation</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;padding:9px 14px;background:linear-gradient(135deg,rgba(99,102,241,.16),rgba(124,58,237,.1));border:1px solid var(--border-b);border-radius:9px;font-size:11px;font-weight:700;color:var(--accent-l);text-align:center;cursor:pointer;">View Report →</div>
+        <div style="padding:9px 14px;background:var(--surface);border:1px solid var(--border);border-radius:9px;font-size:11px;color:var(--fg-dim);text-align:center;cursor:pointer;">PDF ↓</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 4 · HOW IT WORKS (PIPELINE)
+══════════════════════════════════════════════ -->
+<div class="slide grid-bg" data-i="3">
+  <div style="width:100%;max-width:920px;">
+    <div class="label-a fi" style="margin-bottom:18px;">03 / Architecture</div>
+    <h2 class="serif fi1" style="font-size:clamp(30px,3.5vw,48px);margin-bottom:8px;line-height:1.1;">Five agents. One<br><span class="tg">unified intelligence.</span></h2>
+    <p class="fi2" style="font-size:13.5px;color:var(--fg-dim);margin-bottom:36px;max-width:520px;line-height:1.7;">Four research agents run in parallel with live Google Search grounding. A fifth synthesizer combines every signal into a structured report.</p>
+
+    <div class="fi3" style="background:var(--elevated);border:1px solid var(--border);border-radius:20px;padding:28px 32px;">
+
+      <!-- input -->
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;">
+        <div style="background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(124,58,237,.1));border:1px solid var(--border-b);border-radius:11px;padding:12px 22px;font-size:13.5px;font-weight:600;">"Stripe"</div>
+        <svg width="32" height="12" viewBox="0 0 32 12" fill="none"><path d="M0 6h28" stroke="#6366f1" stroke-width="1.5"/><path d="M24 2l6 4-6 4" stroke="#6366f1" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <div class="mono" style="font-size:11px;color:var(--fg-sub);">dispatches 4 research agents</div>
+      </div>
+
+      <!-- 4 agents -->
+      <div class="g4" style="margin-bottom:24px;">
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center;">
+          <div style="font-size:22px;margin-bottom:8px;">📰</div>
+          <div style="font-size:11.5px;font-weight:700;margin-bottom:4px;">News</div>
+          <div style="font-size:10px;color:var(--fg-dim);line-height:1.55;">Press, launches, leadership</div>
+          <div class="mono" style="font-size:9px;color:var(--accent-l);margin-top:7px;">+ Search</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center;">
+          <div style="font-size:22px;margin-bottom:8px;">📊</div>
+          <div style="font-size:11.5px;font-weight:700;margin-bottom:4px;">Financials</div>
+          <div style="font-size:10px;color:var(--fg-dim);line-height:1.55;">Revenue, funding, valuation</div>
+          <div class="mono" style="font-size:9px;color:var(--accent-l);margin-top:7px;">+ Search</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center;">
+          <div style="font-size:22px;margin-bottom:8px;">⭐</div>
+          <div style="font-size:11.5px;font-weight:700;margin-bottom:4px;">Reviews</div>
+          <div style="font-size:10px;color:var(--fg-dim);line-height:1.55;">G2, Trustpilot, Glassdoor</div>
+          <div class="mono" style="font-size:9px;color:var(--accent-l);margin-top:7px;">+ Search</div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 12px;text-align:center;">
+          <div style="font-size:22px;margin-bottom:8px;">📡</div>
+          <div style="font-size:11.5px;font-weight:700;margin-bottom:4px;">Social</div>
+          <div style="font-size:10px;color:var(--fg-dim);line-height:1.55;">LinkedIn, Twitter, Reddit</div>
+          <div class="mono" style="font-size:9px;color:var(--accent-l);margin-top:7px;">+ Search</div>
+        </div>
+      </div>
+
+      <!-- synthesis divider -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border-b));"></div>
+        <div class="mono" style="font-size:9.5px;color:var(--fg-sub);letter-spacing:.1em;white-space:nowrap;">SYNTHESIZER AGENT #5</div>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,var(--border-b),transparent);"></div>
+      </div>
+
+      <!-- output -->
+      <div style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(124,58,237,.05));border:1px solid var(--border-b);border-radius:12px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div style="font-size:13.5px;font-weight:700;margin-bottom:3px;">Structured SWOT Report</div>
+          <div style="font-size:11.5px;color:var(--fg-dim);">Executive summary · SWOT grid · Financial snapshot · Sentiment score · Strategic recommendations</div>
+        </div>
+        <div style="display:flex;gap:7px;flex-shrink:0;">
+          <div class="badge" style="font-size:10px;">Stream SSE</div>
+          <div class="badge badge-y" style="font-size:10px;">PDF Export</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 5 · FEATURES
+══════════════════════════════════════════════ -->
+<div class="slide grid-bg" data-i="4">
+  <div style="width:100%;max-width:920px;">
+    <div class="label-a fi" style="margin-bottom:18px;">04 / Features</div>
+    <h2 class="serif fi1" style="font-size:clamp(30px,3.5vw,50px);margin-bottom:36px;line-height:1.1;">Built for speed,<br><span class="tg">depth, and action.</span></h2>
+
+    <div class="g2 fi2">
+      <div class="card" style="border-left:3px solid var(--accent);padding:28px;">
+        <div style="font-size:26px;margin-bottom:12px;">🤖</div>
+        <div class="mono" style="font-size:10px;color:var(--accent-l);margin-bottom:8px;">01</div>
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;letter-spacing:-.02em;">Multi-Agent Research</h3>
+        <p style="font-size:12.5px;color:var(--fg-dim);line-height:1.7;">Four specialized Gemini agents scan news, financials, reviews, and social in parallel — each with live Google Search grounding for real-time, fact-grounded accuracy.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--purple);padding:28px;">
+        <div style="font-size:26px;margin-bottom:12px;">🎯</div>
+        <div class="mono" style="font-size:10px;color:var(--accent-l);margin-bottom:8px;">02</div>
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;letter-spacing:-.02em;">SWOT Synthesis</h3>
+        <p style="font-size:12.5px;color:var(--fg-dim);line-height:1.7;">A fifth agent cross-references every research signal and synthesizes a structured report: executive summary, SWOT grid, financial snapshot, sentiment score, and strategic recommendations.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--cyan);padding:28px;">
+        <div style="font-size:26px;margin-bottom:12px;">⚡</div>
+        <div class="mono" style="font-size:10px;color:var(--accent-l);margin-bottom:8px;">03</div>
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;letter-spacing:-.02em;">Under 60 Seconds</h3>
+        <p style="font-size:12.5px;color:var(--fg-dim);line-height:1.7;">Parallel async execution with real-time Server-Sent Events streaming. Watch each research phase complete live — news, financials, reviews, social — as results stream to your browser.</p>
+      </div>
+      <div class="card" style="border-left:3px solid var(--amber);padding:28px;">
+        <div style="font-size:26px;margin-bottom:12px;">📄</div>
+        <div class="mono" style="font-size:10px;color:var(--accent-l);margin-bottom:8px;">04</div>
+        <h3 style="font-size:16px;font-weight:700;margin-bottom:8px;letter-spacing:-.02em;">PDF Export</h3>
+        <p style="font-size:12.5px;color:var(--fg-dim);line-height:1.7;">One-click download of a polished, print-ready report — fully formatted with citations and branding. Perfect for board decks, investor updates, or sales battlecards.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 6 · TECHNOLOGY
+══════════════════════════════════════════════ -->
+<div class="slide grid-bg" data-i="5">
+  <div style="width:100%;max-width:880px;">
+    <div class="label-a fi" style="margin-bottom:18px;">05 / Technology</div>
+    <h2 class="serif fi1" style="font-size:clamp(30px,3.5vw,50px);margin-bottom:10px;line-height:1.1;">Production-grade stack,<br><span class="tg">zero compromises.</span></h2>
+    <p class="fi2" style="font-size:13.5px;color:var(--fg-dim);margin-bottom:32px;max-width:480px;line-height:1.7;">Every component chosen for reliability, scale, and developer velocity. Fully containerised and deployed.</p>
+
+    <div class="g3 fi3" style="margin-bottom:14px;">
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:10px;">🤖</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px;">Gemini 2.5 Flash</div>
+        <div class="mono" style="font-size:9.5px;color:var(--accent-l);margin-bottom:8px;">AI Engine</div>
+        <p style="font-size:11px;color:var(--fg-dim);line-height:1.6;">5 agents with live Search grounding. 6-attempt exponential-backoff retry.</p>
+      </div>
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:10px;">⚡</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px;">FastAPI + SSE</div>
+        <div class="mono" style="font-size:9.5px;color:var(--accent-l);margin-bottom:8px;">Backend</div>
+        <p style="font-size:11px;color:var(--fg-dim);line-height:1.6;">Async Python. Server-Sent Events for live streaming. Background tasks per job.</p>
+      </div>
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:10px;">🔥</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px;">Next.js 14</div>
+        <div class="mono" style="font-size:9.5px;color:var(--accent-l);margin-bottom:8px;">Frontend</div>
+        <p style="font-size:11px;color:var(--fg-dim);line-height:1.6;">App Router · GSAP animations · Firebase Google OAuth · demo-mode fallback.</p>
+      </div>
+    </div>
+
+    <div class="g3 fi4">
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:10px;">🐘</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px;">PostgreSQL (Nile)</div>
+        <div class="mono" style="font-size:9.5px;color:var(--accent-l);margin-bottom:8px;">Database</div>
+        <p style="font-size:11px;color:var(--fg-dim);line-height:1.6;">Persistent report storage. Fernet-encrypted user API keys. Raw psycopg2.</p>
+      </div>
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:10px;">🔐</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px;">Firebase Auth</div>
+        <div class="mono" style="font-size:9.5px;color:var(--accent-l);margin-bottom:8px;">Authentication</div>
+        <p style="font-size:11px;color:var(--fg-dim);line-height:1.6;">Google OAuth with JWT validation. Per-user usage enforcement and free-tier limits.</p>
+      </div>
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;">
+        <div style="font-size:28px;margin-bottom:10px;">📊</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px;">WeasyPrint + Streamlit</div>
+        <div class="mono" style="font-size:9.5px;color:var(--accent-l);margin-bottom:8px;">Reports + Admin</div>
+        <p style="font-size:11px;color:var(--fg-dim);line-height:1.6;">PDF from Jinja2 templates. Streamlit admin dashboard for usage analytics.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 7 · MARKET OPPORTUNITY
+══════════════════════════════════════════════ -->
+<div class="slide grid-bg" data-i="6">
+  <div style="width:100%;max-width:900px;">
+    <div class="label-a fi" style="margin-bottom:18px;">06 / Market</div>
+    <h2 class="serif fi1" style="font-size:clamp(30px,3.5vw,50px);margin-bottom:10px;line-height:1.1;">A $30B market<br><span class="tg">ready for disruption.</span></h2>
+    <p class="fi2" style="font-size:13.5px;color:var(--fg-dim);margin-bottom:36px;max-width:520px;line-height:1.7;">The global competitive intelligence market is accelerating — and AI is fundamentally changing how it works.</p>
+
+    <div class="g3 fi3" style="margin-bottom:20px;">
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:26px 22px;">
+        <div class="mono" style="font-size:10px;color:var(--fg-sub);letter-spacing:.12em;margin-bottom:10px;">TAM</div>
+        <div class="mono" style="font-size:40px;font-weight:300;line-height:1;margin-bottom:7px;">$9.7B</div>
+        <p style="font-size:12px;color:var(--fg-dim);line-height:1.6;">Global competitive intelligence market (2024)</p>
+      </div>
+      <div style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(124,58,237,.06));border:1px solid var(--border-b);border-radius:16px;padding:26px 22px;position:relative;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#6366f1,#a78bfa);border-radius:2px 2px 0 0;"></div>
+        <div class="mono" style="font-size:10px;color:var(--accent-l);letter-spacing:.12em;margin-bottom:10px;">SAM</div>
+        <div class="mono" style="font-size:40px;font-weight:300;line-height:1;margin-bottom:7px;">$2.3B</div>
+        <p style="font-size:12px;color:var(--fg-dim);line-height:1.6;">SaaS-based CI tools addressable today</p>
+      </div>
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:16px;padding:26px 22px;">
+        <div class="mono" style="font-size:10px;color:var(--fg-sub);letter-spacing:.12em;margin-bottom:10px;">2030 Projection</div>
+        <div class="mono" style="font-size:40px;font-weight:300;line-height:1;margin-bottom:7px;">$31.4B</div>
+        <p style="font-size:12px;color:var(--fg-dim);line-height:1.6;">22% CAGR driven by AI adoption</p>
+      </div>
+    </div>
+
+    <div class="g4 fi4">
+      <div style="padding:16px;background:var(--elevated);border:1px solid var(--border);border-radius:12px;">
+        <div style="font-size:18px;margin-bottom:7px;">🎯</div>
+        <div style="font-size:12.5px;font-weight:700;margin-bottom:3px;">Strategy Teams</div>
+        <p style="font-size:11px;color:var(--fg-dim);line-height:1.5;">Tracking competitors at companies of all sizes</p>
+      </div>
+      <div style="padding:16px;background:var(--elevated);border:1px solid var(--border);border-radius:12px;">
+        <div style="font-size:18px;margin-bottom:7px;">🚀</div>
+        <div style="font-size:12.5px;font-weight:700;margin-bottom:3px;">Startup Founders</div>
+        <p style="font-size:11px;color:var(--fg-dim);line-height:1.5;">Building investor materials and market maps</p>
+      </div>
+      <div style="padding:16px;background:var(--elevated);border:1px solid var(--border);border-radius:12px;">
+        <div style="font-size:18px;margin-bottom:7px;">📋</div>
+        <div style="font-size:12.5px;font-weight:700;margin-bottom:3px;">Product Managers</div>
+        <p style="font-size:11px;color:var(--fg-dim);line-height:1.5;">Informing roadmap priorities and positioning</p>
+      </div>
+      <div style="padding:16px;background:var(--elevated);border:1px solid var(--border);border-radius:12px;">
+        <div style="font-size:18px;margin-bottom:7px;">🤝</div>
+        <div style="font-size:12.5px;font-weight:700;margin-bottom:3px;">Consultants</div>
+        <p style="font-size:11px;color:var(--fg-dim);line-height:1.5;">Delivering faster, deeper client due diligence</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 8 · BUSINESS MODEL
+══════════════════════════════════════════════ -->
+<div class="slide grid-bg" data-i="7">
+  <div style="width:100%;max-width:860px;">
+    <div class="label-a fi" style="margin-bottom:18px;">07 / Business Model</div>
+    <h2 class="serif fi1" style="font-size:clamp(30px,3.5vw,50px);margin-bottom:10px;line-height:1.1;">Freemium with<br><span class="tg">zero lock-in.</span></h2>
+    <p class="fi2" style="font-size:13.5px;color:var(--fg-dim);margin-bottom:32px;max-width:500px;line-height:1.7;">A generous free tier lets anyone experience the value instantly. Power users bring their own Gemini API key for unlimited access — no subscription required.</p>
+
+    <div class="g3 fi3" style="margin-bottom:18px;">
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:18px;padding:26px;">
+        <div class="badge" style="margin-bottom:14px;font-size:10px;">Free</div>
+        <div class="mono" style="font-size:30px;font-weight:300;margin-bottom:6px;">$0</div>
+        <div style="font-size:12px;color:var(--fg-dim);margin-bottom:18px;">No credit card required</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:12px;color:var(--fg-dim);display:flex;align-items:center;gap:7px;"><span style="color:var(--green);">✓</span> 1 free competitive report</div>
+          <div style="font-size:12px;color:var(--fg-dim);display:flex;align-items:center;gap:7px;"><span style="color:var(--green);">✓</span> Full SWOT synthesis</div>
+          <div style="font-size:12px;color:var(--fg-dim);display:flex;align-items:center;gap:7px;"><span style="color:var(--green);">✓</span> PDF export included</div>
+          <div style="font-size:12px;color:var(--fg-sub);display:flex;align-items:center;gap:7px;"><span>✗</span> Limited to 1 analysis</div>
+        </div>
+      </div>
+
+      <div style="background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(124,58,237,.07));border:1px solid var(--border-b);border-radius:18px;padding:26px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#6366f1,#a78bfa);border-radius:2px 2px 0 0;"></div>
+        <div class="badge" style="margin-bottom:14px;font-size:10px;background:rgba(99,102,241,.2);border-color:rgba(99,102,241,.42);">BYOK</div>
+        <div class="mono" style="font-size:30px;font-weight:300;margin-bottom:6px;">$0</div>
+        <div style="font-size:12px;color:var(--fg-dim);margin-bottom:18px;">Bring your own Gemini key</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:12px;color:var(--fg);display:flex;align-items:center;gap:7px;"><span style="color:var(--green);">✓</span> Unlimited reports</div>
+          <div style="font-size:12px;color:var(--fg);display:flex;align-items:center;gap:7px;"><span style="color:var(--green);">✓</span> Full SWOT synthesis</div>
+          <div style="font-size:12px;color:var(--fg);display:flex;align-items:center;gap:7px;"><span style="color:var(--green);">✓</span> Fernet-encrypted key storage</div>
+          <div style="font-size:12px;color:var(--fg);display:flex;align-items:center;gap:7px;"><span style="color:var(--green);">✓</span> PDF export included</div>
+        </div>
+      </div>
+
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:18px;padding:26px;opacity:.65;">
+        <div class="badge badge-y" style="margin-bottom:14px;font-size:10px;">Coming Soon</div>
+        <div class="mono" style="font-size:30px;font-weight:300;margin-bottom:6px;">Teams</div>
+        <div style="font-size:12px;color:var(--fg-dim);margin-bottom:18px;">Shared workspace + API access</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div style="font-size:12px;color:var(--fg-dim);display:flex;align-items:center;gap:7px;"><span style="color:var(--fg-sub);">→</span> Shared report library</div>
+          <div style="font-size:12px;color:var(--fg-dim);display:flex;align-items:center;gap:7px;"><span style="color:var(--fg-sub);">→</span> API access &amp; webhooks</div>
+          <div style="font-size:12px;color:var(--fg-dim);display:flex;align-items:center;gap:7px;"><span style="color:var(--fg-sub);">→</span> White-label reports</div>
+          <div style="font-size:12px;color:var(--fg-dim);display:flex;align-items:center;gap:7px;"><span style="color:var(--fg-sub);">→</span> Slack / email alerts</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fi4" style="background:var(--elevated);border:1px solid var(--border);border-radius:13px;padding:18px 22px;display:flex;align-items:flex-start;gap:16px;">
+      <div style="font-size:20px;flex-shrink:0;margin-top:2px;">💡</div>
+      <p style="font-size:12.5px;color:var(--fg-dim);line-height:1.65;margin:0;">The <strong style="color:var(--fg);">BYOK model</strong> eliminates our variable AI cost entirely — users bear their own Gemini API costs (free up to 60 RPM on Google AI Studio). This means <strong style="color:var(--fg);">infinite scale at zero marginal cost</strong>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 9 · WHY NOW
+══════════════════════════════════════════════ -->
+<div class="slide grid-bg" data-i="8">
+  <div style="width:100%;max-width:880px;">
+    <div class="label-a fi" style="margin-bottom:18px;">08 / Why Now</div>
+    <h2 class="serif fi1" style="font-size:clamp(30px,3.5vw,50px);margin-bottom:36px;line-height:1.1;">The AI agent era<br><span class="tg">is here.</span></h2>
+
+    <div class="g2 fi2" style="margin-bottom:20px;">
+      <div style="display:flex;flex-direction:column;gap:13px;">
+        <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-box" style="background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.22);">🌐</div>
+          <div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">Gemini Search Grounding</div><p style="font-size:11.5px;color:var(--fg-dim);line-height:1.6;">Google's live search grounding — available only since 2024 — makes real-time, fact-grounded AI research finally possible at this quality and scale.</p></div>
+        </div>
+        <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-box" style="background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.22);">🏗️</div>
+          <div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">Multi-Agent Orchestration Matured</div><p style="font-size:11.5px;color:var(--fg-dim);line-height:1.6;">The tooling to reliably run parallel agents with retries, timeouts, and JSON repair is now mature enough to build production products on — today.</p></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:13px;">
+        <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-box" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.22);">💰</div>
+          <div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">Inference Costs Collapsed</div><p style="font-size:11.5px;color:var(--fg-dim);line-height:1.6;">Gemini Flash makes 5 agentic calls cost fractions of a cent. A full SWOT report is economically viable at any price point — including free.</p></div>
+        </div>
+        <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-box" style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.22);">📈</div>
+          <div><div style="font-size:13px;font-weight:700;margin-bottom:4px;">Incumbents Are Slow to Adapt</div><p style="font-size:11.5px;color:var(--fg-dim);line-height:1.6;">Crayon, Klue, and Battlecard were built for manual workflows. None offer fully automated, multi-source synthesis in under 60 seconds.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="fi3" style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(124,58,237,.06));border:1px solid var(--border-b);border-radius:16px;padding:22px 26px;display:flex;align-items:center;gap:22px;">
+      <div style="font-size:30px;">🚀</div>
+      <div style="flex:1;">
+        <div class="mono" style="font-size:9.5px;color:var(--accent-l);letter-spacing:.1em;margin-bottom:5px;">STATUS</div>
+        <div style="font-size:15.5px;font-weight:700;">Live production app — demo it right now</div>
+        <div style="font-size:12.5px;color:var(--fg-dim);margin-top:3px;">Full-stack · Persistent storage · PDF export · Firebase Auth · Docker-ready</div>
+      </div>
+      <div class="badge badge-g" style="font-size:11px;padding:6px 14px;flex-shrink:0;"><span class="pulse"></span>Live</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 10 · WHAT'S NEXT
+══════════════════════════════════════════════ -->
+<div class="slide grid-bg" data-i="9">
+  <div style="width:100%;max-width:960px;">
+    <div class="label-a fi" style="margin-bottom:18px;">09 / What's Next</div>
+    <h2 class="serif fi1" style="font-size:clamp(30px,3.5vw,50px);margin-bottom:10px;line-height:1.1;">The foundation is built.<br><span class="tg">Here's what comes next.</span></h2>
+    <p class="fi2" style="font-size:13.5px;color:var(--fg-dim);margin-bottom:32px;max-width:580px;line-height:1.7;">Kompete is production-ready today. These are the highest-leverage capabilities on the roadmap — each unlocking a new layer of value.</p>
+
+    <div class="fi3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;">
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:22px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#6366f1,#a78bfa);border-radius:2px 2px 0 0;"></div>
+        <div style="font-size:22px;margin-bottom:10px;">🔔</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:5px;letter-spacing:-.01em;">Competitor Monitoring</div>
+        <div class="mono" style="font-size:9px;color:var(--accent-l);margin-bottom:10px;">Near-term</div>
+        <p style="font-size:11.5px;color:var(--fg-dim);line-height:1.65;">Track companies continuously. Get Slack or email alerts the moment a significant news event, funding round, or sentiment shift is detected — without manually re-running a search.</p>
+      </div>
+
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:22px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#6366f1,#a78bfa);border-radius:2px 2px 0 0;"></div>
+        <div style="font-size:22px;margin-bottom:10px;">⚔️</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:5px;letter-spacing:-.01em;">Head-to-Head Comparison</div>
+        <div class="mono" style="font-size:9px;color:var(--accent-l);margin-bottom:10px;">Near-term</div>
+        <p style="font-size:11.5px;color:var(--fg-dim);line-height:1.65;">Analyze two companies side-by-side — your product vs. a competitor — surfacing direct strengths, weaknesses, and positioning gaps in a single unified report.</p>
+      </div>
+
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:22px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#6366f1,#a78bfa);border-radius:2px 2px 0 0;"></div>
+        <div style="font-size:22px;margin-bottom:10px;">👥</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:5px;letter-spacing:-.01em;">Team Workspaces</div>
+        <div class="mono" style="font-size:9px;color:var(--accent-l);margin-bottom:10px;">Near-term</div>
+        <p style="font-size:11.5px;color:var(--fg-dim);line-height:1.65;">Shared report library, role-based access, and collaborative annotations. Strategy and product teams can build a living, searchable intelligence database together.</p>
+      </div>
+    </div>
+
+    <div class="fi4" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:22px;">
+        <div style="font-size:22px;margin-bottom:10px;">📈</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:5px;letter-spacing:-.01em;">Trend Intelligence</div>
+        <div class="mono" style="font-size:9px;color:var(--fg-sub);margin-bottom:10px;">Mid-term</div>
+        <p style="font-size:11.5px;color:var(--fg-dim);line-height:1.65;">Historical report snapshots enable trend analysis — watch a competitor's sentiment score or financial position evolve over months, not just point-in-time.</p>
+      </div>
+
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:22px;">
+        <div style="font-size:22px;margin-bottom:10px;">🔌</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:5px;letter-spacing:-.01em;">API & Integrations</div>
+        <div class="mono" style="font-size:9px;color:var(--fg-sub);margin-bottom:10px;">Mid-term</div>
+        <p style="font-size:11.5px;color:var(--fg-dim);line-height:1.65;">REST API for embedding Kompete into internal tools, CRMs, or product workflows. Webhooks push report events to Slack, Notion, HubSpot, and more.</p>
+      </div>
+
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:14px;padding:22px;">
+        <div style="font-size:22px;margin-bottom:10px;">🧠</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:5px;letter-spacing:-.01em;">Custom Agent Profiles</div>
+        <div class="mono" style="font-size:9px;color:var(--fg-sub);margin-bottom:10px;">Long-term</div>
+        <p style="font-size:11.5px;color:var(--fg-dim);line-height:1.65;">Let users define custom research lenses — focus agents on regulatory filings, patent activity, hiring signals, or pricing pages for domain-specific depth.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SLIDE 11 · CTA
+══════════════════════════════════════════════ -->
+<div class="slide s10" data-i="10">
+  <div style="text-align:center;max-width:720px;position:relative;z-index:1;">
+
+    <div class="fi" style="margin-bottom:28px;">
+      <div style="display:inline-flex;align-items:center;justify-content:center;width:78px;height:78px;border-radius:22px;background:linear-gradient(135deg,rgba(99,102,241,.2),rgba(124,58,237,.1));border:1px solid rgba(99,102,241,.38);box-shadow:0 0 70px rgba(99,102,241,.22);">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="7" stroke="#818cf8" stroke-width="1.8"/>
+          <path d="m18 18 3 3" stroke="#818cf8" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="11" cy="11" r="3" fill="rgba(99,102,241,.5)"/>
+        </svg>
+      </div>
+    </div>
+
+    <h2 class="serif fi1" style="font-size:clamp(38px,5.5vw,70px);line-height:1.07;margin-bottom:18px;">
+      The future of competitive<br>intelligence is<br><span class="tg">instant.</span>
+    </h2>
+
+    <p class="fi2" style="font-size:16px;color:var(--fg-dim);line-height:1.78;max-width:460px;margin:0 auto 40px;">
+      Kompete replaces hours of manual research with five AI agents and 60 seconds. Try it live — right now.
+    </p>
+
+    <div class="fi3" style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:48px;">
+      <div style="padding:14px 30px;background:linear-gradient(135deg,#6366f1,#7c3aed);border-radius:13px;font-size:14px;font-weight:700;color:white;cursor:pointer;box-shadow:0 4px 28px rgba(99,102,241,.42);">Try Kompete Live →</div>
+      <div style="padding:14px 30px;background:var(--elevated);border:1px solid var(--border-b);border-radius:13px;font-size:14px;font-weight:600;color:var(--fg);cursor:pointer;">View Report Demo</div>
+    </div>
+
+    <div class="fi4" style="display:flex;justify-content:center;align-items:center;gap:28px;padding-top:28px;border-top:1px solid var(--border);flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div class="label" style="margin-bottom:4px;">Built by</div>
+        <div style="font-size:14px;font-weight:700;">Mritunjay Pandey</div>
+      </div>
+      <div style="width:1px;height:32px;background:var(--border);"></div>
+      <div style="text-align:center;">
+        <div class="label" style="margin-bottom:4px;">Contact</div>
+        <div style="font-size:14px;font-weight:600;color:var(--accent-l);">mritunjaypandey0789@gmail.com</div>
+      </div>
+      <div style="width:1px;height:32px;background:var(--border);"></div>
+      <div style="text-align:center;">
+        <div class="label" style="margin-bottom:4px;">Stack</div>
+        <div style="font-size:14px;font-weight:700;">Gemini · FastAPI · Next.js</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- ─── NAVIGATION UI ──────────────────────────────── -->
+<div class="counter" id="ctr">01 / 11</div>
+<div class="dots"   id="dots"></div>
+<div class="arrows">
+  <button class="arrow" id="prv">‹</button>
+  <button class="arrow" id="nxt">›</button>
+</div>
+
+<script>
+const N = 11;
+let cur = 0;
+const slides = document.querySelectorAll('.slide');
+const dotsEl  = document.getElementById('dots');
+const ctrEl   = document.getElementById('ctr');
+
+// build dots
+for (let i = 0; i < N; i++) {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' on' : '');
+  d.onclick = () => go(i);
+  dotsEl.appendChild(d);
+}
+
+function go(n) {
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('on');
+  cur = Math.max(0, Math.min(N - 1, n));
+  slides[cur].classList.add('active');
+  dotsEl.children[cur].classList.add('on');
+  ctrEl.textContent = String(cur + 1).padStart(2,'0') + ' / ' + String(N).padStart(2,'0');
+}
+
+document.getElementById('prv').onclick = () => go(cur - 1);
+document.getElementById('nxt').onclick = () => go(cur + 1);
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); go(cur + 1); }
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    { e.preventDefault(); go(cur - 1); }
+});
+
+// touch swipe
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; });
+document.addEventListener('touchend',   e => {
+  const dx = tx - e.changedTouches[0].clientX;
+  if (Math.abs(dx) > 48) dx > 0 ? go(cur + 1) : go(cur - 1);
+});
+</script>
+</body>
+</html>

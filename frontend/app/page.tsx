@@ -451,9 +451,18 @@ export default function HomePage() {
               Kompete
             </span>
           </div>
-          <p style={{ fontSize: '11.5px', color: 'var(--fg-subtle)', margin: 0, opacity: 0.65 }}>
+          <p style={{ fontSize: '11.5px', color: 'var(--fg-subtle)', margin: '0 0 12px', opacity: 0.65 }}>
             Built for Milan AI Week · AI Agent Olympics Hackathon 2026
           </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+            <Link href="/terms" style={{ fontSize: '11.5px', color: 'var(--fg-subtle)', textDecoration: 'none', opacity: 0.7 }}>
+              Terms &amp; Conditions
+            </Link>
+            <span style={{ fontSize: '11px', color: 'var(--fg-subtle)', opacity: 0.3 }}>·</span>
+            <Link href="/privacy" style={{ fontSize: '11.5px', color: 'var(--fg-subtle)', textDecoration: 'none', opacity: 0.7 }}>
+              Privacy Policy
+            </Link>
+          </div>
         </footer>
 
       </main>

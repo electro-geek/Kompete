@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kompete — Brand Identity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:          #08080d;
+      --surface:     #0c0c14;
+      --elevated:    #121220;
+      --border:      #1a1a28;
+      --muted:       #3a3a52;
+      --subtle:      #7878a0;
+      --fg:          #f0f0f5;
+      --accent:      #6366f1;
+      --accent-dim:  #4f52c8;
+    }
+
+    html, body {
+      background: var(--bg);
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--fg);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 48px 32px 64px;
+      gap: 0;
+    }
+
+    /* ── Board ── */
+    .board {
+      width: 100%;
+      max-width: 1440px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Grid ── */
+    .row {
+      display: grid;
+      border-bottom: 1px solid var(--border);
+    }
+    .row:last-child { border-bottom: none; }
+    .row-1 { grid-template-columns: 5fr 2fr; min-height: 420px; }
+    .row-2 { grid-template-columns: 5fr 2fr; min-height: 220px; }
+    .row-3 { grid-template-columns: 1fr; min-height: 170px; }
+    .row-4 { grid-template-columns: 1fr; }
+
+    /* ── Panels ── */
+    .panel {
+      padding: 32px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel + .panel { border-left: 1px solid var(--border); }
+
+    .panel-num {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      user-select: none;
+    }
+
+    /* ── Panel 1: Hero ── */
+    .panel-hero {
+      background: #09090f;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 64px 80px;
+    }
+
+    .panel-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 50%, rgba(99,102,241,0.06) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .logo-lockup {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-divider {
+      width: 1px;
+      height: 60px;
+      background: var(--muted);
+      flex-shrink: 0;
+      opacity: 0.5;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .logo-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: var(--fg);
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    .logo-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.38em;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    /* ── Panel 2: Icon on Indigo ── */
+    .panel-icon {
+      background: var(--accent);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      position: relative;
+    }
+
+    .panel-icon::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 28px,
+          rgba(255,255,255,0.04) 28px,
+          rgba(255,255,255,0.04) 29px
+        );
+    }
+
+    .panel-icon .panel-num { color: rgba(255,255,255,0.35); }
+
+    .icon-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      color: rgba(255,255,255,0.45);
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Panel 3: Colors ── */
+    .panel-colors {
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 40px 60px;
+    }
+
+    .section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .color-row {
+      display: flex;
+      gap: 14px;
+    }
+
+    .color-chip {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .swatch {
+      height: 44px;
+      border-radius: 3px;
+      margin-bottom: 10px;
+    }
+
+    .swatch-bordered { border: 1px solid var(--border); }
+
+    .chip-name {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--subtle);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .chip-hex {
+      font-size: 11px;
+      font-family: 'SF Mono', 'Consolas', 'Courier New', monospace;
+      color: var(--muted);
+    }
+
+    /* ── Panel 4: Typography ── */
+    .panel-type {
+      background: #0a0a12;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 36px 40px;
+      gap: 20px;
+    }
+
+    .type-block {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .type-meta {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .type-display {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 46px;
+      color: var(--fg);
+      line-height: 1;
+    }
+
+    .type-body {
+      font-family: 'Inter', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--fg);
+      letter-spacing: 0.06em;
+      line-height: 1;
+    }
+
+    .type-mono {
+      font-family: 'SF Mono', 'Consolas', 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    /* ── Panel 5: Tagline ── */
+    .panel-tagline {
+      background: #f2f2f6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 44px 80px;
+      gap: 48px;
+    }
+
+    .tagline-mark {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .tagline-words {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .tagline-line {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+      font-size: 34px;
+      color: #18182a;
+      line-height: 1.35;
+    }
+
+    .tagline-right {
+      flex-shrink: 0;
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .tagline-brand-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      color: #18182a;
+      text-transform: uppercase;
+    }
+
+    .tagline-url {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      text-transform: lowercase;
+    }
+
+    /* ── Footer strip ── */
+    .board-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .footer-text {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ── K Mark inline SVG helper ── */
+    .k-mark-white path { fill: white; }
+    .k-mark-dark path { fill: #18182a; }
+
+    /* ── Crosshair alignment marks (decorative) ── */
+    .crosshair {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+    }
+    .crosshair::before,
+    .crosshair::after {
+      content: '';
+      position: absolute;
+      background: var(--muted);
+    }
+    .crosshair::before { width: 1px; height: 100%; left: 50%; top: 0; }
+    .crosshair::after  { width: 100%; height: 1px; top: 50%; left: 0; }
+    .crosshair-tl { top: 12px; left: 12px; }
+    .crosshair-tr { top: 12px; right: 12px; }
+    .crosshair-bl { bottom: 12px; left: 12px; }
+    .crosshair-br { bottom: 12px; right: 12px; }
+
+    /* ── Monogram sizes ── */
+    .mark-xl  { display: block; height: 88px; position: relative; z-index: 1; }
+    .mark-sm  { display: block; height: 40px; }
+    .mark-xs  { display: block; height: 30px; }
+
+    /* ── Usage variants strip (row 2 extra) ── */
+    .variant-strip {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .variant-cell {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      flex-direction: column;
+      gap: 14px;
+      border-right: 1px solid var(--border);
+      min-height: 160px;
+    }
+    .variant-cell:last-child { border-right: none; }
+
+    .variant-cell-white  { background: #ffffff; }
+    .variant-cell-dark   { background: #09090f; }
+    .variant-cell-accent { background: var(--accent); }
+    .variant-cell-mid    { background: var(--elevated); }
+
+    .variant-label {
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.4;
+    }
+
+    /* ── Size scale (for icon panel detail) ── */
+    .size-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .size-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .size-num {
+      font-size: 8px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+
+<div class="board">
+
+  <!-- ──────────────────────────────────────────
+       ROW 1: HERO LOGO + ICON MARK
+  ────────────────────────────────────────── -->
+  <div class="row row-1">
+
+    <!-- Panel 1: Primary Logo Lockup -->
+    <div class="panel panel-hero">
+      <span class="panel-num">01 — Primary Lockup</span>
+
+      <!-- Crosshair registration marks -->
+      <div class="crosshair crosshair-tl"></div>
+      <div class="crosshair crosshair-tr"></div>
+      <div class="crosshair crosshair-bl"></div>
+      <div class="crosshair crosshair-br"></div>
+
+      <div class="logo-lockup">
+        <!-- K Mark -->
+        <svg class="mark-xl k-mark-white" viewBox="0 0 60 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z"/>
+        </svg>
+
+        <div class="logo-divider"></div>
+
+        <div class="logo-text">
+          <span class="logo-name">Kompete</span>
+          <span class="logo-sub">Competitive Intelligence</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 2: Icon Mark -->
+    <div class="panel panel-icon">
+      <span class="panel-num">02 — Icon Mark</span>
+
+      <!-- Scale sizes -->
+      <div class="size-row">
+        <div class="size-item">
+          <svg class="k-mark-white" viewBox="0 0 60 72" height="64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z"/>
+          </svg>
+          <span class="size-num">64px</span>
+        </div>
+        <div class="size-item">
+          <svg class="k-mark-white" viewBox="0 0 60 72" height="40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z"/>
+          </svg>
+          <span class="size-num">40px</span>
+        </div>
+        <div class="size-item">
+          <svg class="k-mark-white" viewBox="0 0 60 72" height="24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z"/>
+          </svg>
+          <span class="size-num">24px</span>
+        </div>
+      </div>
+      <span class="icon-label">Scales</span>
+    </div>
+
+  </div>
+
+  <!-- ──────────────────────────────────────────
+       ROW 2: USAGE VARIANTS
+  ────────────────────────────────────────── -->
+  <div class="row" style="min-height:0; border-bottom: 1px solid var(--border);">
+    <div class="variant-strip">
+      <!-- On dark -->
+      <div class="variant-cell variant-cell-dark">
+        <svg class="k-mark-white" viewBox="0 0 60 72" height="36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z"/>
+        </svg>
+        <span class="variant-label" style="color:#888;">On Dark</span>
+      </div>
+
+      <!-- On accent -->
+      <div class="variant-cell variant-cell-accent">
+        <svg class="k-mark-white" viewBox="0 0 60 72" height="36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z"/>
+        </svg>
+        <span class="variant-label" style="color:rgba(255,255,255,0.5);">On Accent</span>
+      </div>
+
+      <!-- On white -->
+      <div class="variant-cell variant-cell-white">
+        <svg class="k-mark-dark" viewBox="0 0 60 72" height="36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z"/>
+        </svg>
+        <span class="variant-label" style="color:#aaa;">On White</span>
+      </div>
+
+      <!-- Wordmark dark -->
+      <div class="variant-cell variant-cell-dark" style="flex:2.2;">
+        <div class="logo-lockup" style="gap:20px; transform:scale(0.85); transform-origin:center;">
+          <svg class="k-mark-white" viewBox="0 0 60 72" height="36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z"/>
+          </svg>
+          <div style="width:1px;height:36px;background:#3a3a52;flex-shrink:0;"></div>
+          <div class="logo-text" style="gap:6px;">
+            <span class="logo-name" style="font-size:22px;">Kompete</span>
+            <span class="logo-sub" style="font-size:8px;">Competitive Intelligence</span>
+          </div>
+        </div>
+        <span class="variant-label" style="color:#888;">Full Lockup</span>
+      </div>
+
+      <!-- Wordmark white -->
+      <div class="variant-cell variant-cell-white" style="flex:2.2;">
+        <div class="logo-lockup" style="gap:20px; transform:scale(0.85); transform-origin:center;">
+          <svg class="k-mark-dark" viewBox="0 0 60 72" height="36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z"/>
+          </svg>
+          <div style="width:1px;height:36px;background:#ccc;flex-shrink:0;"></div>
+          <div class="logo-text" style="gap:6px;">
+            <span class="logo-name" style="font-size:22px;color:#18182a;">Kompete</span>
+            <span class="logo-sub" style="font-size:8px;">Competitive Intelligence</span>
+          </div>
+        </div>
+        <span class="variant-label" style="color:#aaa;">Light Mode</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────
+       ROW 3: COLOR + TYPOGRAPHY
+  ────────────────────────────────────────── -->
+  <div class="row row-2">
+
+    <!-- Panel 3: Color System -->
+    <div class="panel panel-colors">
+      <span class="panel-num">03 — Color System</span>
+
+      <div style="margin-top: 32px;">
+        <div class="section-label">Primary Palette</div>
+        <div class="color-row">
+          <div class="color-chip">
+            <div class="swatch swatch-bordered" style="background: #08080d;"></div>
+            <div class="chip-name">Void</div>
+            <div class="chip-hex">#08080D</div>
+          </div>
+          <div class="color-chip">
+            <div class="swatch" style="background: #0c0c14;border:1px solid #1a1a28;"></div>
+            <div class="chip-name">Surface</div>
+            <div class="chip-hex">#0C0C14</div>
+          </div>
+          <div class="color-chip">
+            <div class="swatch" style="background: #121220;"></div>
+            <div class="chip-name">Elevated</div>
+            <div class="chip-hex">#121220</div>
+          </div>
+          <div class="color-chip">
+            <div class="swatch" style="background: #6366f1;"></div>
+            <div class="chip-name">Indigo</div>
+            <div class="chip-hex">#6366F1</div>
+          </div>
+          <div class="color-chip">
+            <div class="swatch" style="background: #818cf8;"></div>
+            <div class="chip-name">Indigo Lt</div>
+            <div class="chip-hex">#818CF8</div>
+          </div>
+          <div class="color-chip">
+            <div class="swatch" style="background: #f0f0f5;"></div>
+            <div class="chip-name">Frost</div>
+            <div class="chip-hex">#F0F0F5</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 28px;">
+        <div class="section-label">Semantic</div>
+        <div class="color-row">
+          <div class="color-chip">
+            <div class="swatch" style="background:#22c55e;height:30px;"></div>
+            <div class="chip-name">Green</div>
+            <div class="chip-hex">#22C55E</div>
+          </div>
+          <div class="color-chip">
+            <div class="swatch" style="background:#f59e0b;height:30px;"></div>
+            <div class="chip-name">Amber</div>
+            <div class="chip-hex">#F59E0B</div>
+          </div>
+          <div class="color-chip">
+            <div class="swatch" style="background:#ef4444;height:30px;"></div>
+            <div class="chip-name">Red</div>
+            <div class="chip-hex">#EF4444</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 4: Typography -->
+    <div class="panel panel-type">
+      <span class="panel-num">04 — Typography</span>
+
+      <div class="type-block">
+        <div class="type-meta">Display — Instrument Serif</div>
+        <div class="type-display">Aa</div>
+      </div>
+
+      <div class="type-block">
+        <div class="type-meta">Interface — Inter</div>
+        <div class="type-body">KOMPETE</div>
+        <div style="font-size:11px;color:var(--subtle);margin-top:6px;letter-spacing:0.04em;font-weight:400;">
+          The intelligence layer<br>beneath every decision.
+        </div>
+      </div>
+
+      <div class="type-block">
+        <div class="type-meta">Data — Monospace</div>
+        <div class="type-mono">SWOT · KPI · 4.7/5.0</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ──────────────────────────────────────────
+       ROW 4: TAGLINE (LIGHT)
+  ────────────────────────────────────────── -->
+  <div class="row row-3">
+    <div class="panel panel-tagline">
+      <span class="panel-num" style="color:#bbbbd0;">05 — Brand Statement</span>
+
+      <div class="tagline-mark">
+        <!-- K mark in dark on light bg -->
+        <svg class="k-mark-dark" viewBox="0 0 60 72" height="52" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 0,0 L 10,0 L 10,26 L 60,0 L 60,10 L 10,36 L 60,62 L 60,72 L 10,46 L 10,72 L 0,72 Z"/>
+        </svg>
+      </div>
+
+      <div class="tagline-words">
+        <span class="tagline-line">Intelligence is the competitive edge.</span>
+      </div>
+
+      <div class="tagline-right">
+        <span class="tagline-brand-name">Kompete</span>
+        <span class="tagline-url">kompete.ai</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ──────────────────────────────────────────
+       FOOTER
+  ────────────────────────────────────────── -->
+  <div class="board-footer">
+    <span class="footer-text">Kompete — Brand Identity System</span>
+    <span class="footer-text" style="color:#1e1e2e;">Version 1.0 &nbsp;·&nbsp; 2025</span>
+  </div>
+
+</div>
+
+</body>
+</html>

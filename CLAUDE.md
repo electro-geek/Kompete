@@ -26,6 +26,10 @@ npm run lint       # ESLint
 # Admin dashboard (Streamlit)
 streamlit run admin/dashboard.py
 
+# Utility scripts (run from backend/ with venv active)
+python check_db.py      # inspect PostgreSQL tables
+python test_gemini.py   # smoke-test the Gemini API key
+
 # Docker
 cd backend && docker compose up     # backend on 8001→8000
 docker compose up                   # frontend on 3000 (root docker-compose.yml)
@@ -86,12 +90,10 @@ User types company name
   → GET /download/{company} → WeasyPrint PDF from report JSON
 ```
 
-Note: `run_research_pipeline()` docstring says "parallel" but the implementation is sequential — `asyncio.gather` was removed to reduce Gemini rate-limit errors.
-
 ### Backend (`backend/`)
 
 - **`main.py`** — FastAPI app. All routes, in-memory dicts (`report_cache`, `job_progress`, `job_status`, `_sse_subscribers`), Firebase JWT decoding, and the `_do_research` BackgroundTask.
-- **`agents.py`** — Five Gemini calls wrapped in `_run_agent()` (6-attempt exponential-backoff retry). `_clean_json()` strips markdown fences and does a state-machine repair pass on truncated Gemini JSON.
+- **`agents.py`** — Five Gemini calls wrapped in `_run_agent()` (6-attempt exponential-backoff retry). The four research agents run sequentially inside `_run_sequentially()` (the function wraps them inside `asyncio.wait_for` with `RESEARCH_TIMEOUT_SECONDS`). `_clean_json()` strips markdown fences and does a state-machine repair pass on truncated Gemini JSON.
 - **`config.py`** — Single import point for all settings. Every other module reads from here, never directly from env.
 - **`database.py`** — Raw psycopg2, no ORM. Three tables: `reports`, `user_settings` (encrypted Gemini keys), `user_profiles`.
 - **`report.py`** — WeasyPrint PDF from `templates/report_pdf.html` (Jinja2).
@@ -103,10 +105,16 @@ Note: `run_research_pipeline()` docstring says "parallel" but the implementation
 - **`hooks/useResearchStream.ts`** — `EventSource` → `ResearchProgress` state → auto-navigates to report on `synthesis_done`.
 - **`lib/api.ts`** — All backend calls. Token goes as `Authorization: Bearer` header for fetch, and as `?token=` query param for EventSource/PDF URLs (EventSource doesn't support custom headers).
 - **`lib/types.ts`** — `ReportData` interface is the canonical shape of the synthesis JSON. Keep in sync with the Gemini prompt in `agents.py`.
+- **`components/report/`** — One component per report section: `SwotGrid`, `FinancialSnapshot`, `SentimentScore`, `InsightsList`, `Recommendations`, `StrategicMoves`, `SourcesList`, `ExecutiveSummary`.
+- GSAP (`gsap` npm package) is available for animations.
 
 ### Admin (`admin/`)
 
 Streamlit app calling `GET /admin/stats` and `GET /admin/users` with `X-Admin-Secret` header. Standalone — no shared code with the main backend.
+
+### Vercel deployment
+
+`api/index.py` (repo root) and `backend/api/index.py` are thin shims that add the correct directory to `sys.path` and re-export `app` from `main.py`. These exist solely for Vercel's serverless function discovery — do not add logic there.
 
 ---
 
@@ -141,3 +149,4 @@ Typography: **Instrument Serif** (italic, for display headings and report titles
 - **SSE replay.** `_sse_subscribers` holds an `asyncio.Queue` per company. A late-joining client receives the full `job_progress[key]` list replayed before live events.
 - **Cache eviction.** `_evict_old_reports()` runs after every job, removing entries older than `REPORT_CACHE_TTL_SECONDS` and capping at `MAX_CACHED_REPORTS`.
 - **User Gemini keys** are stored Fernet-encrypted in `user_settings`; decrypted in-memory per request.
+- **`backend/kompete.db`** is an unused SQLite artifact — the backend exclusively uses PostgreSQL.
